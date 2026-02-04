@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuidado con el pug - Renta de Transportes</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <h1>🚌 Cuidado con el pug</h1>
+            <p class="subtitle">Sistema de Renta de Transportes</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        
+        <!-- Sección de Búsqueda -->
+        <section class="search-section card">
+            <h2>Busca tu Transporte</h2>
+            <form id="searchForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="origen">Origen</label>
+                        <input type="text" id="origen" name="origen" placeholder="¿De dónde sales?" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="destino">Destino</label>
+                        <input type="text" id="destino" name="destino" placeholder="¿A dónde vas?" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fecha">Fecha de Salida</label>
+                        <input type="date" id="fecha" name="fecha" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pasajeros">Pasajeros</label>
+                        <input type="number" id="pasajeros" name="pasajeros" min="1" max="50" value="1" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">🔍 Buscar Transportes</button>
+            </form>
+            
+            <!-- Resultados de búsqueda -->
+            <div id="searchResults" class="results-container"></div>
+        </section>
+
+        <!-- Sección de Promociones -->
+        <section class="promotions-section">
+            <h2>Promociones Especiales</h2>
+            <div id="promotionsContainer" class="promotions-grid"></div>
+        </section>
+
+        <!-- Sección de Newsletter -->
+        <section class="newsletter-section card">
+            <h2>📧 Recibe Ofertas Especiales</h2>
+            <p>Suscríbete a nuestro boletín y recibe las mejores promociones</p>
+            <form id="newsletterForm">
+                <div class="newsletter-input">
+                    <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+                    <button type="submit" class="btn btn-primary">Suscribirse</button>
+                </div>
+            </form>
+            <div id="newsletterMessage"></div>
+        </section>
+
+    </main>
+
+    <!-- Carrusel de Calificaciones -->
+    <section class="reviews-carousel">
+        <div class="container">
+            <h2>Calificaciones de Clientes</h2>
+            <div class="carousel-wrapper">
+                <button class="carousel-btn prev" onclick="previousReview()">‹</button>
+                <div id="reviewCarousel" class="carousel-content">
+                    <div class="carousel-loading">Cargando calificaciones...</div>
+                </div>
+                <button class="carousel-btn next" onclick="nextReview()">›</button>
+            </div>
+            <div class="carousel-dots" id="carouselDots"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p><strong>Cuidado con el pug</strong></p>
+            <p>N.L., Calle linsana #69, cp 42067, San Nicolas de los Garza, Mexico</p>
+            <p>Copyright 2026 | Todos los derechos reservados</p>
+            <div class="footer-links">
+                <a href="#" onclick="alert('Sección en desarrollo')">Términos y condiciones</a>
+                <a href="#" onclick="alert('Sección en desarrollo')">Información legal</a>
+                <a href="#" onclick="alert('Sección en desarrollo')">Aviso de privacidad</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
