@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Iniciar sesión | Renta de Camionetas</title>
+  <link rel="stylesheet" href="/static/register.css" />
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <p class="brand">Cuidado con el pug</p>
+      <h1>Iniciar sesión</h1>
+
+      <form id="loginForm" class="form">
+        <label>Email</label>
+        <input name="email" type="email" placeholder="tu@correo.com" required />
+
+        <label>Contraseña</label>
+        <input name="password" type="password" placeholder="••••••••" required />
+
+        <button class="btn primary" type="submit">Entrar</button>
+
+        <!-- ✅ Crear cuenta -->
+        <button class="btn outline" type="button" id="goRegister">
+          Crear cuenta
+        </button>
+
+        <!-- ✅ Olvidé mi contraseña -->
+        <button class="btn outline" type="button" id="goForgot">
+          ¿Olvidaste tu contraseña?
+        </button>
+
+        <p id="msg" class="msg" aria-live="polite"></p>
+      </form>
+
+      <footer class="footer">
+        Derechos reservados 2026 | Cuidado con el pug
+      </footer>
+    </section>
+  </main>
+
+  <script src="/static/login.js"></script>
+</body>
+</html>

@@ -422,3 +422,64 @@ footer p {
         font-size: 1.1em;
     }
 }
+
+/* =========================
+   Botones Auth (Login/Registro)
+   ========================= */
+
+/* Nota: tu header ya está centrado, así que los dejo centrados debajo del subtítulo */
+header .container {
+    position: relative; /* por si luego quieres moverlos a esquina */
+}
+
+.auth-actions{
+    margin-top: 14px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Estos botones son <a>, así que hay que quitarles lo de link */
+.auth-actions .btn{
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    text-transform: none; /* para que diga Login/Registro y no LOGIN/REGISTRO */
+    line-height: 1;
+    transition: all 0.2s ease;
+}
+
+/* Botón Login (outline) */
+.btn-login{
+    background: transparent;
+    border: 2px solid #667eea;
+    color: #667eea;
+}
+
+/* Botón Registro (filled) */
+.btn-register{
+    background: #667eea;
+    color: #ffffff;
+    border: 2px solid #667eea;
+}
+
+.btn-login:hover,
+.btn-register:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.25);
+}
+
+/* Responsive: en móvil se apilan bonito */
+@media (max-width: 768px) {
+    .auth-actions{
+        gap: 10px;
+    }
+    .auth-actions .btn{
+        width: 180px;
+        text-align: center;
+    }
+}

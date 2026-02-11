@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Crear cuenta | Renta de Camionetas</title>
+  <link rel="stylesheet" href="/static/register.css" />
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <p class="brand">Cuidado con el pug</p>
+      <h1>Crear cuenta</h1>
+
+      <form id="registerForm" class="form">
+        <label>Ingresar nombre</label>
+        <input name="full_name" placeholder="Nombre" required />
+
+        <label>Email</label>
+        <input name="email" type="email" placeholder="tu@correo.com" required />
+
+        <label>Num. de teléfono</label>
+        <input name="phone" placeholder="+52 (555) 000-0000" required />
+
+        <label>Contraseña</label>
+        <input name="password" type="password" placeholder="••••••••" required />
+
+        <label>Confirmar contraseña</label>
+        <input name="confirm_password" type="password" placeholder="••••••••" required />
+
+        <button class="btn primary" type="submit">Registrarse</button>
+
+        <!-- ✅ Ir a Login -->
+        <button class="btn outline" type="button" id="goLogin">
+          ¿Ya tienes una cuenta? Iniciar sesión
+        </button>
+
+        <p class="mini">
+          Al crear una cuenta aceptas nuestro <a href="#">aviso de privacidad</a> y los <a href="#">términos de uso</a>.
+        </p>
+
+        <p id="msg" class="msg" aria-live="polite"></p>
+      </form>
+
+      <footer class="footer">
+        Derechos reservados 2026 | Cuidado con el pug
+      </footer>
+    </section>
+  </main>
+
+  <script src="/static/register.js"></script>
+</body>
+</html>
