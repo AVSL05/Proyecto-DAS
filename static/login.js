@@ -2,6 +2,34 @@ const form = document.getElementById("loginForm");
 const msg = document.getElementById("msg");
 const goRegister = document.getElementById("goRegister");
 const goForgot = document.getElementById("goForgot");
+const googleLogin = document.getElementById("googleLogin");
+
+// Verificar si hay un token en la URL (desde Google OAuth)
+const urlParams = new URLSearchParams(window.location.search);
+const token = urlParams.get('token');
+const provider = urlParams.get('provider');
+
+if (token && provider === 'google') {
+  // Guardar el token
+  localStorage.setItem("access_token", token);
+  localStorage.setItem("token_type", "bearer");
+  
+  msg.className = "msg ok";
+  msg.textContent = "✅ Login con Google exitoso. Redirigiendo...";
+  
+  // Limpiar la URL
+  window.history.replaceState({}, document.title, "/login");
+  
+  // Redirigir al dashboard
+  setTimeout(() => {
+    window.location.href = "/";
+  }, 700);
+}
+
+googleLogin.addEventListener("click", () => {
+  // Redirigir al endpoint de Google OAuth
+  window.location.href = "/api/auth/google/login";
+});
 
 goRegister.addEventListener("click", () => {
   window.location.href = "/register";

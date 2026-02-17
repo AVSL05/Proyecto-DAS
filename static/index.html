@@ -9,15 +9,10 @@
 <body>
     <!-- Header -->
     <header>
+        <a class="btn btn-login" href="/login">Login</a>
         <div class="container">
             <h1>🚌 Cuidado con el pug</h1>
             <p class="subtitle">Sistema de Renta de Transportes</p>
-
-            <!-- Botones Auth -->
-            <div class="auth-actions">
-                <a class="btn btn-login" href="/login">Login</a>
-                <a class="btn btn-register" href="/register">Registro</a>
-            </div>
         </div>
     </header>
 
@@ -29,14 +24,16 @@
             <h2>Busca tu Transporte</h2>
             <form id="searchForm">
                 <div class="form-grid">
-                    <div class="form-group">
+                    <div class="form-group autocomplete-wrapper">
                         <label for="origen">Origen</label>
-                        <input type="text" id="origen" name="origen" placeholder="¿De dónde sales?" required>
+                        <input type="text" id="origen" name="origen" placeholder="¿De dónde sales?" required autocomplete="off">
+                        <div id="origenSuggestions" class="autocomplete-suggestions"></div>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group autocomplete-wrapper">
                         <label for="destino">Destino</label>
-                        <input type="text" id="destino" name="destino" placeholder="¿A dónde vas?" required>
+                        <input type="text" id="destino" name="destino" placeholder="¿A dónde vas?" required autocomplete="off">
+                        <div id="destinoSuggestions" class="autocomplete-suggestions"></div>
                     </div>
                     
                     <div class="form-group">
@@ -107,6 +104,6 @@
         </div>
     </footer>
 
-    <script src="/static/app.js"></script>
+    <script src="/static/app.js?v=2"></script>
 </body>
 </html>

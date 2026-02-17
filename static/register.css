@@ -88,6 +88,23 @@ h1{
   color:#4f46e5;
 }
 
+.btn.google{
+  margin-top:0;
+  background:white;
+  border:1px solid #dadce0;
+  color:#3c4043;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:500;
+  transition: all 0.2s;
+}
+
+.btn.google:hover{
+  background:#f8f9fa;
+  box-shadow:0 1px 3px rgba(0,0,0,.1);
+}
+
 .mini{
   margin:14px 0 0;
   font-size:12px;

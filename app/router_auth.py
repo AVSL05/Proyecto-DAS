@@ -1,11 +1,13 @@
 import re
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
+from fastapi.responses import RedirectResponse
 
 from datetime import datetime, timezone
 from app.db_models import PasswordResetToken
 from .schemas import ForgotPasswordRequest, ResetPasswordRequest
 from .security import create_reset_token, hash_token, reset_expiry_dt
+from .oauth_config import oauth
 
 from .db import get_db
 from app.db_models import User
@@ -166,3 +168,68 @@ def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db))
     db.commit()
 
     return {"message": "Contraseña actualizada correctamente."}
+
+
+# ===== Google OAuth Endpoints =====
+
+@router.get("/google/login")
+async def google_login(request: Request):
+    """Inicia el flujo de autenticación con Google"""
+    redirect_uri = request.url_for('google_callback')
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+
+@router.get("/google/callback")
+async def google_callback(request: Request, db: Session = Depends(get_db)):
+    """Callback de Google OAuth - procesa la respuesta de Google"""
+    try:
+        token = await oauth.google.authorize_access_token(request)
+        user_info = token.get('userinfo')
+        
+        if not user_info:
+            raise HTTPException(status_code=400, detail="No se pudo obtener información del usuario de Google")
+        
+        email = user_info.get('email', '').lower().strip()
+        google_id = user_info.get('sub')
+        full_name = user_info.get('name', '')
+        avatar_url = user_info.get('picture', '')
+        
+        if not email or not google_id:
+            raise HTTPException(status_code=400, detail="Información de Google incompleta")
+        
+        # Buscar usuario existente por email o google_id
+        user = db.query(User).filter(
+            (User.email == email) | (User.google_id == google_id)
+        ).first()
+        
+        if user:
+            # Actualizar información si el usuario ya existe
+            if not user.google_id:
+                user.google_id = google_id
+            user.avatar_url = avatar_url
+            user.full_name = full_name
+        else:
+            # Crear nuevo usuario
+            user = User(
+                full_name=full_name,
+                email=email,
+                google_id=google_id,
+                avatar_url=avatar_url,
+                phone=None,  # No requerido para OAuth
+                password_hash=None  # No necesario para OAuth
+            )
+            db.add(user)
+        
+        db.commit()
+        db.refresh(user)
+        
+        # Crear token JWT
+        access_token = create_access_token(subject=user.email, extra_claims={"uid": user.id})
+        
+        # Redirigir al frontend con el token
+        frontend_url = f"http://localhost:8000/login?token={access_token['token']}&provider=google"
+        return RedirectResponse(url=frontend_url)
+        
+    except Exception as e:
+        print(f"Error en Google OAuth: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error en autenticación de Google: {str(e)}")

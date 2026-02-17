@@ -24,6 +24,7 @@ header {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     text-align: center;
     margin-bottom: 30px;
+    position: relative;
 }
 
 header h1 {
@@ -424,62 +425,222 @@ footer p {
 }
 
 /* =========================
-   Botones Auth (Login/Registro)
+   Botón Login (esquina superior derecha)
    ========================= */
 
-/* Nota: tu header ya está centrado, así que los dejo centrados debajo del subtítulo */
-header .container {
-    position: relative; /* por si luego quieres moverlos a esquina */
-}
-
-.auth-actions{
-    margin-top: 14px;
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-/* Estos botones son <a>, así que hay que quitarles lo de link */
-.auth-actions .btn{
-    display: inline-block;
-    padding: 10px 16px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 700;
-    text-transform: none; /* para que diga Login/Registro y no LOGIN/REGISTRO */
-    line-height: 1;
-    transition: all 0.2s ease;
-}
-
-/* Botón Login (outline) */
 .btn-login{
-    background: transparent;
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: none;
+    line-height: 1;
+    transition: all 0.3s ease;
+    background: white;
+    color: #667eea;
     border: 2px solid #667eea;
+    z-index: 1000;
+}
+
+.btn-login:hover{
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* =========================
+   AUTOCOMPLETE
+   ========================= */
+
+.autocomplete-wrapper {
+    position: relative;
+}
+
+.autocomplete-suggestions {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #667eea;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.suggestion-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background: #f8f9fa;
     color: #667eea;
 }
 
-/* Botón Registro (filled) */
-.btn-register{
+/* =========================
+   VEHÍCULOS
+   ========================= */
+
+.vehicle-card {
+    display: flex;
+    gap: 20px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-left: 4px solid #667eea;
+}
+
+.vehicle-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+}
+
+.vehicle-image {
+    flex: 0 0 300px;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vehicle-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.vehicle-placeholder {
+    font-size: 4em;
+}
+
+.vehicle-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.vehicle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.vehicle-header h4 {
+    color: #333;
+    font-size: 1.3em;
+    margin: 0;
+}
+
+.vehicle-type {
     background: #667eea;
-    color: #ffffff;
-    border: 2px solid #667eea;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
 }
 
-.btn-login:hover,
-.btn-register:hover{
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.25);
+.vehicle-specs {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    color: #666;
+    font-size: 0.95em;
 }
 
-/* Responsive: en móvil se apilan bonito */
+.vehicle-specs span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.vehicle-description {
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    flex: 1;
+}
+
+.vehicle-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.vehicle-pricing {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.price-main {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #764ba2;
+}
+
+.price-unit {
+    font-size: 0.6em;
+    color: #999;
+    font-weight: normal;
+}
+
+.price-secondary {
+    color: #666;
+    font-size: 0.9em;
+}
+
+/* Responsive para vehículos */
 @media (max-width: 768px) {
-    .auth-actions{
+    .vehicle-card {
+        flex-direction: column;
+    }
+    
+    .vehicle-image {
+        flex: 0 0 200px;
+        width: 100%;
+    }
+    
+    .vehicle-header {
+        flex-direction: column;
+        align-items: flex-start;
         gap: 10px;
     }
-    .auth-actions .btn{
-        width: 180px;
-        text-align: center;
+    
+    .vehicle-footer {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .vehicle-footer .btn {
+        width: 100%;
     }
 }

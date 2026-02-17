@@ -1,113 +1,87 @@
-from fastapi import APIRouter, HTTPException, Query
-from app.models.schemas import TransportSearchRequest, SearchResponse, TransportResult, TransportType
+from fastapi import APIRouter, HTTPException, Query, Depends
+from sqlalchemy.orm import Session
+from app.db import get_db
+from app.db_models import Vehicle
 from datetime import date, datetime
-from typing import List
+from typing import List, Optional
 
 router = APIRouter()
 
-# Base de datos simulada (en producción usar PostgreSQL/MongoDB)
-transports_db = [
-    {
-        "id": 1,
-        "tipo": TransportType.BUS,
-        "origen": "Ciudad de México",
-        "destino": "Guadalajara",
-        "fecha_salida": date(2026, 2, 10),
-        "hora_salida": "08:00",
-        "capacidad": 40,
-        "precio": 450.00,
-        "disponible": True,
-        "empresa": "Cuidado con el pug"
-    },
-    {
-        "id": 2,
-        "tipo": TransportType.VAN,
-        "origen": "Monterrey",
-        "destino": "San Luis Potosí",
-        "fecha_salida": date(2026, 2, 15),
-        "hora_salida": "10:30",
-        "capacidad": 15,
-        "precio": 350.00,
-        "disponible": True,
-        "empresa": "Cuidado con el pug"
-    },
-    {
-        "id": 3,
-        "tipo": TransportType.AUTOBUS,
-        "origen": "Cancún",
-        "destino": "Playa del Carmen",
-        "fecha_salida": date(2026, 2, 20),
-        "hora_salida": "14:00",
-        "capacidad": 50,
-        "precio": 200.00,
-        "disponible": True,
-        "empresa": "Cuidado con el pug"
-    }
+# Ciudades principales de México
+CIUDADES_MEXICO = [
+    "Aguascalientes", "Campeche", "Cancún", "Celaya", "Chetumal", "Chihuahua",
+    "Ciudad de México", "Ciudad Juárez", "Ciudad Victoria", "Colima", "Cuernavaca",
+    "Culiacán", "Durango", "Ensenada", "Guadalajara", "Guanajuato", "Hermosillo",
+    "Irapuato", "La Paz", "León", "Los Mochis", "Manzanillo", "Matamoros",
+    "Mazatlán", "Mérida", "Mexicali", "Monterrey", "Morelia", "Nogales",
+    "Nuevo Laredo", "Oaxaca", "Pachuca", "Playa del Carmen", "Puebla", "Puerto Vallarta",
+    "Querétaro", "Reynosa", "Saltillo", "San Luis Potosí", "San Miguel de Allende",
+    "Tampico", "Tapachula", "Tepic", "Tijuana", "Toluca", "Torreón", "Tuxtla Gutiérrez",
+    "Uruapan", "Veracruz", "Villahermosa", "Zacatecas"
 ]
 
-@router.post("/transport", response_model=SearchResponse)
-async def search_transport(search_request: TransportSearchRequest):
-    """
-    Endpoint para buscar transportes disponibles según criterios de búsqueda
-    
-    - **origen**: Ubicación de salida
-    - **destino**: Ubicación de llegada
-    - **fecha_salida**: Fecha del viaje
-    - **num_pasajeros**: Cantidad de pasajeros
-    """
-    try:
-        # Filtrar transportes según criterios
-        resultados = []
-        for transport in transports_db:
-            if (transport["origen"].lower() == search_request.origen.lower() and
-                transport["destino"].lower() == search_request.destino.lower() and
-                transport["fecha_salida"] >= search_request.fecha_salida and
-                transport["capacidad"] >= search_request.num_pasajeros and
-                transport["disponible"]):
-                resultados.append(TransportResult(**transport))
-        
-        return SearchResponse(
-            resultados=resultados,
-            total=len(resultados)
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al buscar transportes: {str(e)}")
 
-@router.get("/locations")
-async def get_locations():
-    """
-    Endpoint para obtener las ubicaciones disponibles
-    """
-    # Extraer ubicaciones únicas de la base de datos
-    origenes = set(t["origen"] for t in transports_db)
-    destinos = set(t["destino"] for t in transports_db)
+@router.get("/cities")
+async def get_cities(q: Optional[str] = None):
+    """Obtiene lista de ciudades de México, con filtro opcional"""
+    if q:
+        # Filtrar ciudades que contengan el query (case insensitive)
+        filtered_cities = [city for city in CIUDADES_MEXICO if q.lower() in city.lower()]
+        return {"cities": sorted(filtered_cities)}
     
-    ubicaciones = list(origenes.union(destinos))
-    
-    return {
-        "ubicaciones": sorted(ubicaciones),
-        "total": len(ubicaciones)
-    }
+    return {"cities": sorted(CIUDADES_MEXICO)}
 
-@router.get("/available-dates")
-async def get_available_dates(
-    origen: str = Query(..., description="Ubicación de origen"),
-    destino: str = Query(..., description="Ubicación de destino")
+
+@router.get("/vehicles")
+async def search_vehicles(
+    origin: Optional[str] = Query(None, description="Ciudad de origen"),
+    destination: Optional[str] = Query(None, description="Ciudad de destino"),
+    start_date: Optional[str] = Query(None, description="Fecha de inicio (YYYY-MM-DD)"),
+    capacity: Optional[int] = Query(None, description="Capacidad mínima de pasajeros"),
+    vehicle_type: Optional[str] = Query(None, description="Tipo de vehículo"),
+    db: Session = Depends(get_db)
 ):
-    """
-    Endpoint para obtener fechas disponibles para una ruta específica
-    """
-    fechas_disponibles = []
+    """Buscar vehículos disponibles con filtros"""
     
-    for transport in transports_db:
-        if (transport["origen"].lower() == origen.lower() and
-            transport["destino"].lower() == destino.lower() and
-            transport["disponible"]):
-            fechas_disponibles.append(transport["fecha_salida"])
+    # Query base - solo vehículos activos y disponibles
+    query = db.query(Vehicle).filter(
+        Vehicle.is_active == True,
+        Vehicle.status == 'available'
+    )
+    
+    # Aplicar filtros
+    if capacity:
+        query = query.filter(Vehicle.capacity >= capacity)
+    
+    if vehicle_type:
+        query = query.filter(Vehicle.vehicle_type == vehicle_type)
+    
+    vehicles = query.order_by(Vehicle.price_per_day.asc()).all()
+    
+    # Formatear respuesta
+    results = []
+    for vehicle in vehicles:
+        results.append({
+            "id": vehicle.id,
+            "brand": vehicle.brand,
+            "model": vehicle.model,
+            "year": vehicle.year,
+            "vehicle_type": vehicle.vehicle_type,
+            "capacity": vehicle.capacity,
+            "plate": vehicle.plate,
+            "color": vehicle.color,
+            "price_per_day": float(vehicle.price_per_day),
+            "price_per_hour": float(vehicle.price_per_hour) if vehicle.price_per_hour else None,
+            "description": vehicle.description,
+            "features": vehicle.features,
+            "image_url": vehicle.image_url,
+            "status": vehicle.status
+        })
     
     return {
-        "origen": origen,
-        "destino": destino,
-        "fechas_disponibles": sorted(set(fechas_disponibles)),
-        "total": len(set(fechas_disponibles))
+        "total": len(results),
+        "origin": origin,
+        "destination": destination,
+        "start_date": start_date,
+        "vehicles": results
     }

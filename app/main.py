@@ -5,8 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.middleware.sessions import SessionMiddleware
 
-from app.routes import search, promotions, reviews, newsletter
+from app.routes import search, promotions, reviews, newsletter, reservations, vehicles
 from app.router_auth import router as auth_router
 from app.db import engine, Base
 
@@ -30,6 +31,12 @@ Base.metadata.create_all(bind=engine)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
+# --- Session middleware for OAuth ---
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="your-secret-key-change-in-production-please-make-it-random"
+)
+
 # --- CORS ---
 app.add_middleware(
     CORSMiddleware,
@@ -44,6 +51,8 @@ app.include_router(search.router, prefix="/api/search", tags=["Búsqueda"])
 app.include_router(promotions.router, prefix="/api/promotions", tags=["Promociones"])
 app.include_router(reviews.router, prefix="/api/reviews", tags=["Calificaciones"])
 app.include_router(newsletter.router, prefix="/api/newsletter", tags=["Newsletter"])
+app.include_router(vehicles.router)  # Ya tiene el prefix en el router
+app.include_router(reservations.router)  # Ya tiene el prefix en el router
 
 # --- Auth router ---
 app.include_router(auth_router)
