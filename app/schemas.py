@@ -12,7 +12,7 @@ class RegisterRequest(BaseModel):
     confirm_password: str = Field(min_length=8, max_length=128)
 
 class UserOut(BaseModel):
-    id: int
+    id: str  # MongoDB usa ObjectId (string)
     full_name: str
     email: EmailStr
     phone: Optional[str] = None

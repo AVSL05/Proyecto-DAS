@@ -106,7 +106,15 @@ form.addEventListener("submit", async (event) => {
 
     if (!response.ok) {
       msg.classList.add("err");
-      msg.textContent = body.detail || "Credenciales invalidas.";
+      // Manejar errores de validación (arrays de objetos)
+      if (Array.isArray(body.detail)) {
+        const errores = body.detail.map(err => err.msg || JSON.stringify(err)).join(', ');
+        msg.textContent = errores;
+      } else if (typeof body.detail === 'string') {
+        msg.textContent = body.detail;
+      } else {
+        msg.textContent = "Credenciales invalidas. Verifica tus datos.";
+      }
       return;
     }
 

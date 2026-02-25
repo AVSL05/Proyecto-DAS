@@ -35,7 +35,15 @@ form.addEventListener("submit", async (e) => {
 
     if (!res.ok) {
       msg.classList.add("err");
-      msg.textContent = body.detail || "No se pudo actualizar.";
+      // Manejar errores de validación
+      if (Array.isArray(body.detail)) {
+        const errores = body.detail.map(err => err.msg || JSON.stringify(err)).join(', ');
+        msg.textContent = errores;
+      } else if (typeof body.detail === 'string') {
+        msg.textContent = body.detail;
+      } else {
+        msg.textContent = "No se pudo actualizar. Verifica los datos.";
+      }
       return;
     }
 
