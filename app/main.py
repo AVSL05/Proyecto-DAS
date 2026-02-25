@@ -7,9 +7,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.routes import search, promotions, reviews, newsletter, reservations, vehicles
+from app.routes import admin, newsletter, promotions, reservations, reviews, search, vehicles
 from app.router_auth import router as auth_router
-from app.db import engine, Base
+from app.db import Base, engine, ensure_user_role_column
 
 
 # --- Paths (según tu estructura) ---
@@ -26,6 +26,7 @@ app = FastAPI(
 )
 
 Base.metadata.create_all(bind=engine)
+ensure_user_role_column()
 
 # --- Static & templates ---
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -53,6 +54,7 @@ app.include_router(reviews.router, prefix="/api/reviews", tags=["Calificaciones"
 app.include_router(newsletter.router, prefix="/api/newsletter", tags=["Newsletter"])
 app.include_router(vehicles.router)  # Ya tiene el prefix en el router
 app.include_router(reservations.router)  # Ya tiene el prefix en el router
+app.include_router(admin.router)
 
 # --- Auth router ---
 app.include_router(auth_router)
@@ -82,3 +84,7 @@ def forgot_password_page(request: Request):
 @app.get("/reset-password", response_class=HTMLResponse, include_in_schema=False)
 def reset_password_page(request: Request):
     return templates.TemplateResponse("reset_password.html", {"request": request})
+
+@app.get("/admin", response_class=HTMLResponse, include_in_schema=False)
+def admin_dashboard_page(request: Request):
+    return templates.TemplateResponse("admin_dashboard.html", {"request": request})

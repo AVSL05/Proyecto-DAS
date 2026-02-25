@@ -3,31 +3,80 @@ const msg = document.getElementById("msg");
 const goRegister = document.getElementById("goRegister");
 const goForgot = document.getElementById("goForgot");
 const googleLogin = document.getElementById("googleLogin");
+const roleInput = document.getElementById("roleInput");
+const roleButtons = document.querySelectorAll("[data-role-option]");
 
-// Verificar si hay un token en la URL (desde Google OAuth)
-const urlParams = new URLSearchParams(window.location.search);
-const token = urlParams.get('token');
-const provider = urlParams.get('provider');
+const ACCESS_CLIENT = "cliente";
+const ACCESS_ADMIN = "administrativo";
 
-if (token && provider === 'google') {
-  // Guardar el token
+function setRole(role) {
+  roleInput.value = role;
+  roleButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.roleOption === role);
+  });
+}
+
+function redirectByRole(role) {
+  window.location.href = role === ACCESS_ADMIN ? "/admin" : "/";
+}
+
+async function resolveRoleFromToken(token) {
+  const response = await fetch("/api/auth/me", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    return ACCESS_CLIENT;
+  }
+
+  const body = await response.json();
+  return body.role || ACCESS_CLIENT;
+}
+
+function persistSession(token, tokenType, role) {
   localStorage.setItem("access_token", token);
-  localStorage.setItem("token_type", "bearer");
-  
-  msg.className = "msg ok";
-  msg.textContent = "✅ Login con Google exitoso. Redirigiendo...";
-  
-  // Limpiar la URL
-  window.history.replaceState({}, document.title, "/login");
-  
-  // Redirigir al dashboard
-  setTimeout(() => {
-    window.location.href = "/";
-  }, 700);
+  localStorage.setItem("token_type", tokenType || "bearer");
+  localStorage.setItem("user_role", role || ACCESS_CLIENT);
+}
+
+roleButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setRole(button.dataset.roleOption);
+  });
+});
+
+setRole(roleInput.value || ACCESS_CLIENT);
+
+const urlParams = new URLSearchParams(window.location.search);
+const oauthToken = urlParams.get("token");
+const provider = urlParams.get("provider");
+
+if (oauthToken && provider === "google") {
+  msg.className = "msg";
+  msg.textContent = "Validando inicio de sesion con Google...";
+
+  resolveRoleFromToken(oauthToken)
+    .then((role) => {
+      persistSession(oauthToken, "bearer", role);
+      msg.classList.add("ok");
+      msg.textContent = "Login exitoso. Redirigiendo...";
+      window.history.replaceState({}, document.title, "/login");
+      setTimeout(() => redirectByRole(role), 700);
+    })
+    .catch(() => {
+      msg.classList.add("err");
+      msg.textContent = "No se pudo validar el acceso de Google.";
+    });
 }
 
 googleLogin.addEventListener("click", () => {
-  // Redirigir al endpoint de Google OAuth
+  if (roleInput.value === ACCESS_ADMIN) {
+    msg.className = "msg err";
+    msg.textContent = "El acceso administrativo no usa inicio con Google.";
+    return;
+  }
   window.location.href = "/api/auth/google/login";
 });
 
@@ -39,42 +88,35 @@ goForgot.addEventListener("click", () => {
   window.location.href = "/forgot-password";
 });
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
   msg.className = "msg";
-  msg.textContent = "Iniciando sesión...";
+  msg.textContent = "Iniciando sesion...";
 
   const data = Object.fromEntries(new FormData(form).entries());
 
   try {
-    const res = await fetch("/api/auth/login", {
+    const response = await fetch("/api/auth/login", {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(data)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
     });
 
-    const body = await res.json().catch(() => ({}));
+    const body = await response.json().catch(() => ({}));
 
-    if (!res.ok) {
+    if (!response.ok) {
       msg.classList.add("err");
-      msg.textContent = body.detail || "Credenciales inválidas.";
+      msg.textContent = body.detail || "Credenciales invalidas.";
       return;
     }
 
-    // Guarda JWT
-    localStorage.setItem("access_token", body.token);
-    localStorage.setItem("token_type", body.token_type);
+    const userRole = body?.user?.role || ACCESS_CLIENT;
+    persistSession(body.token, body.token_type, userRole);
 
     msg.classList.add("ok");
-    msg.textContent = "✅ Login OK. Redirigiendo...";
-
-    // Aquí luego mandas a tu dashboard real
-    setTimeout(() => {
-      // Por ahora lo mandamos a /register o a una ruta que crees después
-      window.location.href = "/register";
-    }, 700);
-
-  } catch {
+    msg.textContent = "Login correcto. Redirigiendo...";
+    setTimeout(() => redirectByRole(userRole), 700);
+  } catch (error) {
     msg.classList.add("err");
     msg.textContent = "No se pudo conectar al servidor.";
   }

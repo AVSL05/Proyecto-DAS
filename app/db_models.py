@@ -4,6 +4,10 @@ from .db import Base
 from sqlalchemy import Boolean
 import enum
 
+class UserRole(str, enum.Enum):
+    CLIENT = "cliente"
+    ADMIN = "administrativo"
+
 class User(Base):
     __tablename__ = "users"
 
@@ -14,6 +18,13 @@ class User(Base):
     password_hash = Column(String(255), nullable=True)  # Nullable para OAuth
     google_id = Column(String(255), nullable=True, unique=True, index=True)  # ID de Google
     avatar_url = Column(String(500), nullable=True)  # URL de avatar de Google
+    role = Column(
+        String(30),
+        nullable=False,
+        default=UserRole.CLIENT.value,
+        server_default=UserRole.CLIENT.value,
+        index=True
+    )
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     
     # Relaciones

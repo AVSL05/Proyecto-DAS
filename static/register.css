@@ -128,3 +128,46 @@ h1{
 }
 .msg.ok{ color:#0f766e; }
 .msg.err{ color:#b91c1c; }
+
+.role-switch{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:0 0 14px;
+}
+
+.role-btn{
+  border:1px solid #d4d8ff;
+  background:#eef2ff;
+  color:#3730a3;
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:14px;
+  cursor:pointer;
+}
+
+.role-btn.active{
+  color:#fff;
+  border-color:transparent;
+  background:linear-gradient(90deg, #3b82f6, #6d28d9);
+}
+
+.divider{
+  margin:16px 0 10px;
+  text-align:center;
+  color:#6b7280;
+  position:relative;
+}
+
+.divider::before,
+.divider::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  width:38%;
+  height:1px;
+  background:#d1d5db;
+}
+
+.divider::before{ left:0; }
+.divider::after{ right:0; }

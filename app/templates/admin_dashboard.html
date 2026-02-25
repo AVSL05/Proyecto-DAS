@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel administrativo | Cuidado con el pug</title>
+  <link rel="stylesheet" href="/static/admin.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <p class="eyebrow">Cuidado con el pug</p>
+      <h1>Panel administrativo</h1>
+    </div>
+    <div class="actions">
+      <p id="adminName" class="admin-name"></p>
+      <button id="goClient" class="btn ghost" type="button">Vista cliente</button>
+      <button id="logoutBtn" class="btn danger" type="button">Cerrar sesion</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="summary-grid" id="summaryGrid">
+      <article class="card stat">
+        <p>Usuarios</p>
+        <strong id="usersTotal">-</strong>
+      </article>
+      <article class="card stat">
+        <p>Reservaciones</p>
+        <strong id="reservationsTotal">-</strong>
+      </article>
+      <article class="card stat">
+        <p>Pendientes</p>
+        <strong id="reservationsPending">-</strong>
+      </article>
+      <article class="card stat">
+        <p>Vehiculos activos</p>
+        <strong id="vehiclesActive">-</strong>
+      </article>
+    </section>
+
+    <section class="panel card">
+      <div class="panel-head">
+        <h2>Gestion de reservaciones</h2>
+        <button id="refreshReservations" class="btn small" type="button">Actualizar</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Vehiculo</th>
+              <th>Fechas</th>
+              <th>Estatus</th>
+              <th>Notas admin</th>
+              <th>Accion</th>
+            </tr>
+          </thead>
+          <tbody id="reservationsTable">
+            <tr><td colspan="7">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel card">
+      <div class="panel-head">
+        <h2>Gestion de vehiculos</h2>
+        <button id="refreshVehicles" class="btn small" type="button">Actualizar</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Vehiculo</th>
+              <th>Placa</th>
+              <th>Precio dia</th>
+              <th>Estatus</th>
+              <th>Activo</th>
+              <th>Accion</th>
+            </tr>
+          </thead>
+          <tbody id="vehiclesTable">
+            <tr><td colspan="7">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel card">
+      <div class="panel-head">
+        <h2>Gestion de usuarios</h2>
+        <button id="refreshUsers" class="btn small" type="button">Actualizar</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Telefono</th>
+              <th>Rol</th>
+              <th>Accion</th>
+            </tr>
+          </thead>
+          <tbody id="usersTable">
+            <tr><td colspan="6">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <p id="msg" class="message" aria-live="polite"></p>
+
+  <script src="/static/admin.js"></script>
+</body>
+</html>
