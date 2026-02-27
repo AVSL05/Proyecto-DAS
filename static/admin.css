@@ -235,6 +235,31 @@ h1 {
   margin-bottom: 12px;
 }
 
+.vehicle-status-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid #dbe2f0;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.vehicle-status-legend-title {
+  margin: 0;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.vehicle-status-legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 h2 {
   margin: 0;
   font-size: 18px;
@@ -665,6 +690,46 @@ input[type="checkbox"] {
   padding: 4px 8px;
   font-size: 12px;
   background: #e2e8f0;
+  color: #334155;
+}
+
+.vehicle-status-cell select {
+  margin-top: 8px;
+}
+
+.vehicle-status-pill {
+  border: 1px solid transparent;
+  text-transform: capitalize;
+}
+
+.status-available {
+  border-color: #86efac;
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-reserved {
+  border-color: #fca5a5;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-maintenance {
+  border-color: #fdba74;
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.status-in-use {
+  border-color: #93c5fd;
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+.status-unavailable,
+.status-neutral {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
   color: #334155;
 }
 

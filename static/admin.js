@@ -2,6 +2,13 @@ const ACCESS_ADMIN = "administrativo";
 const reservationStatuses = ["pending", "confirmed", "in_progress", "completed", "cancelled"];
 const vehicleStatuses = ["available", "reserved", "in_use", "maintenance", "unavailable"];
 const userRoles = ["cliente", "administrativo"];
+const vehicleStatusLabels = {
+  available: "disponible",
+  reserved: "reservado",
+  maintenance: "mantenimiento",
+  in_use: "en uso",
+  unavailable: "no disponible",
+};
 
 const msg = document.getElementById("msg");
 const adminName = document.getElementById("adminName");
@@ -590,6 +597,30 @@ function renderStatusOptions(options, selected) {
     .join("");
 }
 
+function getVehicleStatusStyleClass(status) {
+  const normalized = String(status || "").toLowerCase();
+  if (normalized === "available") return "status-available";
+  if (normalized === "reserved") return "status-reserved";
+  if (normalized === "maintenance") return "status-maintenance";
+  if (normalized === "in_use") return "status-in-use";
+  if (normalized === "unavailable") return "status-unavailable";
+  return "status-neutral";
+}
+
+function getVehicleStatusLabel(status) {
+  const normalized = String(status || "").toLowerCase();
+  return vehicleStatusLabels[normalized] || normalized || "-";
+}
+
+function renderVehicleStatusOptions(selected) {
+  return vehicleStatuses
+    .map((option) => {
+      const isSelected = option === selected ? "selected" : "";
+      return `<option value="${option}" ${isSelected}>${escapeHtml(getVehicleStatusLabel(option))}</option>`;
+    })
+    .join("");
+}
+
 function getViewFromHash() {
   const hash = (window.location.hash || "").replace("#", "").trim().toLowerCase();
   return hash || DEFAULT_ADMIN_VIEW;
@@ -889,6 +920,8 @@ async function loadVehicles() {
 
   vehiclesTable.innerHTML = data.vehicles
     .map((vehicle) => {
+      const statusLabel = getVehicleStatusLabel(vehicle.status);
+      const statusClass = getVehicleStatusStyleClass(vehicle.status);
       return `
         <tr>
           <td>#${vehicle.id}</td>
@@ -898,9 +931,12 @@ async function loadVehicles() {
             <input data-vehicle-price-day="${vehicle.id}" type="number" min="0" step="0.01"
               value="${vehicle.price_per_day ?? 0}" />
           </td>
-          <td>
+          <td class="vehicle-status-cell">
+            <span class="status-pill vehicle-status-pill ${statusClass}" data-vehicle-status-pill="${vehicle.id}">
+              ${escapeHtml(statusLabel)}
+            </span>
             <select data-vehicle-status="${vehicle.id}">
-              ${renderStatusOptions(vehicleStatuses, vehicle.status)}
+              ${renderVehicleStatusOptions(vehicle.status)}
             </select>
           </td>
           <td>
@@ -962,9 +998,7 @@ async function saveReservation(reservationId) {
   });
 
   showMessage(`Reservacion #${reservationId} actualizada`);
-  await loadSummary();
-  await loadReservations();
-  await loadSales();
+  await Promise.all([loadSummary(), loadReservations(), loadSales(), loadVehicles()]);
 }
 
 async function saveVehicle(vehicleId) {
@@ -983,7 +1017,7 @@ async function saveVehicle(vehicleId) {
   });
 
   showMessage(`Vehiculo #${vehicleId} actualizado`);
-  await loadSummary();
+  await Promise.all([loadSummary(), loadVehicles()]);
 }
 
 async function saveUserRole(userId) {
@@ -1028,6 +1062,20 @@ vehiclesTable.addEventListener("click", async (event) => {
   }
 });
 
+vehiclesTable.addEventListener("change", (event) => {
+  const select = event.target.closest("[data-vehicle-status]");
+  if (!select) return;
+
+  const vehicleId = select.dataset.vehicleStatus;
+  const pill = document.querySelector(`[data-vehicle-status-pill="${vehicleId}"]`);
+  if (!pill) return;
+
+  const statusLabel = getVehicleStatusLabel(select.value);
+  const statusClass = getVehicleStatusStyleClass(select.value);
+  pill.className = `status-pill vehicle-status-pill ${statusClass}`;
+  pill.textContent = statusLabel;
+});
+
 usersTable.addEventListener("click", async (event) => {
   const button = event.target.closest("[data-save-user]");
   if (!button) return;
@@ -1044,7 +1092,7 @@ usersTable.addEventListener("click", async (event) => {
 
 refreshReservations.addEventListener("click", async () => {
   try {
-    await Promise.all([loadReservations(), loadSales()]);
+    await Promise.all([loadReservations(), loadSales(), loadVehicles()]);
   } catch (error) {
     showMessage(error.message, "err");
   }

@@ -351,6 +351,11 @@ def update_reservation(
             raise HTTPException(status_code=400, detail="Estatus de reservacion invalido")
         reservation.status = status_value
 
+        if status_value in {"confirmed", "in_progress"} and reservation.vehicle_id:
+            vehicle = db.query(Vehicle).filter(Vehicle.id == reservation.vehicle_id).first()
+            if vehicle:
+                vehicle.status = "reserved"
+
     if payload.admin_notes is not None:
         reservation.admin_notes = payload.admin_notes.strip()
 
