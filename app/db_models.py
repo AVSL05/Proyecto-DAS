@@ -140,6 +140,8 @@ class Reservation(Base):
     user = relationship("User", back_populates="reservations")
     vehicle = relationship("Vehicle", back_populates="reservations")
     payment = relationship("Payment", back_populates="reservation", uselist=False, cascade="all, delete-orphan")
+    invoice = relationship("Invoice", back_populates="reservation", uselist=False, cascade="all, delete-orphan")
+    support_tickets = relationship("SupportTicket", back_populates="reservation", cascade="all, delete-orphan")
 
 
 class Payment(Base):
@@ -162,3 +164,40 @@ class Payment(Base):
 
     reservation = relationship("Reservation", back_populates="payment")
     user = relationship("User", back_populates="payments")
+
+
+class Invoice(Base):
+    """Factura vinculada a una reservacion."""
+    __tablename__ = "invoices"
+
+    id = Column(Integer, primary_key=True, index=True)
+    reservation_id = Column(Integer, ForeignKey("reservations.id"), nullable=False, unique=True, index=True)
+    folio = Column(String(30), nullable=False, unique=True, index=True)
+    invoice_number = Column(String(50), nullable=False, unique=True, index=True)
+    amount = Column(Numeric(10, 2), nullable=False)
+    currency = Column(String(8), nullable=False, default="MXN")
+    status = Column(String(30), nullable=False, default="generated", index=True)
+    issued_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+
+    reservation = relationship("Reservation", back_populates="invoice")
+
+
+class SupportTicket(Base):
+    """Ticket de soporte levantado por cliente con folio de reservacion."""
+    __tablename__ = "support_tickets"
+
+    id = Column(Integer, primary_key=True, index=True)
+    reservation_id = Column(Integer, ForeignKey("reservations.id"), nullable=False, index=True)
+    folio = Column(String(30), nullable=False, index=True)
+    issue_type = Column(String(80), nullable=False, default="general", index=True)
+    message = Column(Text, nullable=False)
+    contact_name = Column(String(120), nullable=True)
+    contact_email = Column(String(120), nullable=True)
+    contact_phone = Column(String(30), nullable=True)
+    status = Column(String(30), nullable=False, default="open", index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+
+    reservation = relationship("Reservation", back_populates="support_tickets")

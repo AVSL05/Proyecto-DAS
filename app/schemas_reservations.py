@@ -62,7 +62,7 @@ class VehicleListOut(BaseModel):
 class ReservationBase(BaseModel):
     vehicle_id: int
     promotion_id: Optional[int] = Field(None, ge=1, description="ID de promocion activa")
-    payment_method: Optional[str] = Field(None, description="efectivo, tarjeta, cheque, deposito")
+    payment_method: Optional[str] = Field(None, description="efectivo, tarjeta, msi, cheque, deposito")
     payment_reference: Optional[str] = Field(None, max_length=255)
     payment_notes: Optional[str] = Field(None, max_length=1500)
     start_date: datetime
@@ -85,7 +85,7 @@ class ReservationBase(BaseModel):
     def validate_payment_method(cls, value):
         if value is None:
             return value
-        allowed = {"efectivo", "tarjeta", "cheque", "deposito"}
+        allowed = {"efectivo", "tarjeta", "msi", "cheque", "deposito"}
         normalized = value.strip().lower()
         if normalized not in allowed:
             raise ValueError("Metodo de pago invalido")
@@ -127,6 +127,10 @@ class ReservationOut(BaseModel):
     
     # Datos del usuario (solo nombre)
     user_name: Optional[str] = None
+    invoice_folio: Optional[str] = None
+    invoice_number: Optional[str] = None
+    invoice_status: Optional[str] = None
+    invoice_issued_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True

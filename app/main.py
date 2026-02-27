@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.routes import admin, newsletter, promotions, reservations, reviews, search, vehicles
+from app.routes import admin, newsletter, promotions, reservations, reviews, search, support, vehicles
 from app.router_auth import router as auth_router
 from app.db import Base, engine, ensure_user_role_column
 
@@ -52,6 +52,7 @@ app.include_router(search.router, prefix="/api/search", tags=["Búsqueda"])
 app.include_router(promotions.router, prefix="/api/promotions", tags=["Promociones"])
 app.include_router(reviews.router, prefix="/api/reviews", tags=["Calificaciones"])
 app.include_router(newsletter.router, prefix="/api/newsletter", tags=["Newsletter"])
+app.include_router(support.router)
 app.include_router(vehicles.router)  # Ya tiene el prefix en el router
 app.include_router(reservations.router)  # Ya tiene el prefix en el router
 app.include_router(admin.router)

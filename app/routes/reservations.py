@@ -6,7 +6,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from typing import List, Optional
 
 from app.db import get_db
-from app.db_models import Payment, Reservation, Vehicle, User
+from app.db_models import Invoice, Payment, Reservation, User, Vehicle
 from app.routes.promotions import promotions_db
 from app.schemas_reservations import (
     ReservationCreate, ReservationUpdate, ReservationOut, ReservationListOut, ReservationStats
@@ -119,6 +119,14 @@ def get_active_promotion(promotion_id: Optional[int]) -> Optional[dict]:
     return promotion
 
 
+def build_reservation_folio(reservation_id: int) -> str:
+    return f"VT-{reservation_id:04d}"
+
+
+def build_invoice_number(reservation_id: int, issued_at: datetime) -> str:
+    return f"FAC-{issued_at.strftime('%Y%m%d')}-{reservation_id:06d}"
+
+
 @router.post("/", response_model=ReservationOut, status_code=status.HTTP_201_CREATED)
 def create_reservation(
     payload: ReservationCreate,
@@ -204,14 +212,66 @@ def create_reservation(
     )
 
     db.add(payment)
+    issued_at = datetime.now(timezone.utc)
+    invoice = Invoice(
+        reservation_id=reservation.id,
+        folio=build_reservation_folio(reservation.id),
+        invoice_number=build_invoice_number(reservation.id, issued_at),
+        amount=total_price,
+        currency="MXN",
+        status="generated",
+        issued_at=issued_at,
+    )
+    db.add(invoice)
     db.commit()
     db.refresh(reservation)
     
     # Agregar información del vehículo
     reservation.vehicle = vehicle
     reservation.user_name = current_user.full_name
+    reservation.invoice_folio = invoice.folio
+    reservation.invoice_number = invoice.invoice_number
+    reservation.invoice_status = invoice.status
+    reservation.invoice_issued_at = invoice.issued_at
     
     return reservation
+
+
+@router.get("/{reservation_id}/invoice")
+def get_invoice_for_reservation(
+    reservation_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user_from_token)
+):
+    reservation = db.query(Reservation).filter(Reservation.id == reservation_id).first()
+    if not reservation or reservation.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Reservación no encontrada")
+
+    invoice = db.query(Invoice).filter(Invoice.reservation_id == reservation.id).first()
+    if not invoice:
+        issued_at = datetime.now(timezone.utc)
+        invoice = Invoice(
+            reservation_id=reservation.id,
+            folio=build_reservation_folio(reservation.id),
+            invoice_number=build_invoice_number(reservation.id, issued_at),
+            amount=reservation.total_price,
+            currency="MXN",
+            status="generated",
+            issued_at=issued_at,
+        )
+        db.add(invoice)
+        db.commit()
+        db.refresh(invoice)
+
+    return {
+        "reservation_id": reservation.id,
+        "folio": invoice.folio,
+        "invoice_number": invoice.invoice_number,
+        "status": invoice.status,
+        "issued_at": invoice.issued_at,
+        "amount": invoice.amount,
+        "currency": invoice.currency,
+    }
 
 
 @router.get("/", response_model=ReservationListOut)

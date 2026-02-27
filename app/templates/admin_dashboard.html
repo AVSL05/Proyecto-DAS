@@ -32,13 +32,13 @@
           <span class="sidebar-icon">CF</span>
           <span class="sidebar-label">Configuracion</span>
         </button>
-        <button class="sidebar-link" data-sidebar-item="Accesibilidad" data-sidebar-view="accesibilidad" type="button">
-          <span class="sidebar-icon">AC</span>
-          <span class="sidebar-label">Accesibilidad</span>
-        </button>
         <button class="sidebar-link" data-sidebar-item="Ventas" data-sidebar-view="ventas" type="button">
           <span class="sidebar-icon">VT</span>
           <span class="sidebar-label">Ventas</span>
+        </button>
+        <button class="sidebar-link" data-sidebar-item="CRM" data-sidebar-view="crm" type="button">
+          <span class="sidebar-icon">RM</span>
+          <span class="sidebar-label">CRM</span>
         </button>
         <button class="sidebar-link" data-sidebar-item="Sucursales" data-sidebar-view="sucursales" type="button">
           <span class="sidebar-icon">SC</span>
@@ -163,67 +163,11 @@
         </section>
       </section>
 
-      <section class="admin-view" data-admin-view="accesibilidad">
-        <section class="panel card">
-          <div class="view-head">
-            <h2>Accesibilidad</h2>
-            <p>Preferencias para mejorar lectura, contraste y navegacion.</p>
-          </div>
-          <div class="feature-grid">
-            <article class="card feature-card">
-              <h3>Lectura</h3>
-              <label class="setting-row">
-                <span>Tamano de texto grande</span>
-                <input type="checkbox" />
-              </label>
-              <label class="setting-row">
-                <span>Resaltar enlaces</span>
-                <input type="checkbox" />
-              </label>
-              <label class="setting-row">
-                <span>Espaciado adicional</span>
-                <input type="checkbox" />
-              </label>
-            </article>
-            <article class="card feature-card">
-              <h3>Visual</h3>
-              <label class="setting-row">
-                <span>Alto contraste</span>
-                <input type="checkbox" />
-              </label>
-              <label class="setting-row">
-                <span>Reducir animaciones</span>
-                <input type="checkbox" />
-              </label>
-              <label class="setting-row">
-                <span>Modo monocromatico</span>
-                <input type="checkbox" />
-              </label>
-            </article>
-            <article class="card feature-card">
-              <h3>Soporte</h3>
-              <label class="setting-row">
-                <span>Subtitulos autom.</span>
-                <input type="checkbox" />
-              </label>
-              <label class="setting-row">
-                <span>Asistente de voz</span>
-                <input type="checkbox" />
-              </label>
-              <label class="setting-row">
-                <span>Atajos de teclado</span>
-                <input type="checkbox" />
-              </label>
-            </article>
-          </div>
-        </section>
-      </section>
-
       <section class="admin-view" data-admin-view="ventas">
         <section class="panel card">
           <div class="view-head">
             <h2>Ventas</h2>
-            <p>Rendimiento comercial y seguimiento de transacciones.</p>
+            <p>Rendimiento comercial con trazabilidad de reservas, cancelaciones y reembolsos.</p>
           </div>
           <section class="summary-grid compact-grid">
             <article class="card stat">
@@ -239,6 +183,14 @@
               <strong id="salesClosedReservations">-</strong>
             </article>
             <article class="card stat">
+              <p>Canceladas</p>
+              <strong id="salesCancelledReservations">-</strong>
+            </article>
+            <article class="card stat">
+              <p>Reembolsos pendientes</p>
+              <strong id="salesRefundPending">-</strong>
+            </article>
+            <article class="card stat">
               <p>Ticket promedio</p>
               <strong id="salesAvgTicket">-</strong>
             </article>
@@ -250,13 +202,16 @@
                   <th>Folio</th>
                   <th>Cliente</th>
                   <th>Canal</th>
+                  <th>Metodo</th>
                   <th>Monto</th>
+                  <th>Reserva</th>
+                  <th>Reembolso</th>
                   <th>Estatus</th>
                 </tr>
               </thead>
               <tbody id="salesTable">
                 <tr>
-                  <td colspan="5">Cargando...</td>
+                  <td colspan="8">Cargando...</td>
                 </tr>
               </tbody>
             </table>
@@ -264,27 +219,146 @@
         </section>
       </section>
 
+      <section class="admin-view" data-admin-view="crm">
+        <section class="panel card">
+          <div class="view-head">
+            <h2>CRM servicio al cliente</h2>
+            <p>Seguimiento de casos, SLA y reembolsos con prioridad operativa.</p>
+          </div>
+          <section class="summary-grid compact-grid">
+            <article class="card stat">
+              <p>Casos totales</p>
+              <strong id="crmTotalCases">-</strong>
+            </article>
+            <article class="card stat">
+              <p>Casos abiertos</p>
+              <strong id="crmOpenCases">-</strong>
+            </article>
+            <article class="card stat">
+              <p>Alta prioridad</p>
+              <strong id="crmHighPriority">-</strong>
+            </article>
+            <article class="card stat">
+              <p>Reembolsos pendientes</p>
+              <strong id="crmRefundPending">-</strong>
+            </article>
+          </section>
+          <div class="table-wrap mini-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sel.</th>
+                  <th>Folio</th>
+                  <th>Cliente</th>
+                  <th>Caso</th>
+                  <th>Prioridad</th>
+                  <th>Estatus</th>
+                  <th>Ultima actualizacion</th>
+                </tr>
+              </thead>
+              <tbody id="crmCasesTable">
+                <tr>
+                  <td colspan="7">Cargando...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <section id="crmDetailPanel" class="card crm-detail-card">
+            <p id="crmDetailHint" class="crm-detail-hint">Selecciona una fila para ver el detalle del ticket.</p>
+            <div id="crmDetailBody" class="crm-detail-body" hidden>
+              <div class="crm-detail-grid">
+                <article class="crm-detail-item">
+                  <p>Ticket</p>
+                  <strong id="crmDetailCaseId">-</strong>
+                </article>
+                <article class="crm-detail-item">
+                  <p>Folio</p>
+                  <strong id="crmDetailFolio">-</strong>
+                </article>
+                <article class="crm-detail-item">
+                  <p>Cliente</p>
+                  <strong id="crmDetailClient">-</strong>
+                </article>
+                <article class="crm-detail-item">
+                  <p>Contacto</p>
+                  <strong id="crmDetailContact">-</strong>
+                </article>
+                <article class="crm-detail-item">
+                  <p>Tipo de caso</p>
+                  <strong id="crmDetailType">-</strong>
+                </article>
+                <article class="crm-detail-item">
+                  <p>Prioridad</p>
+                  <strong id="crmDetailPriority">-</strong>
+                </article>
+                <article class="crm-detail-item">
+                  <p>Estatus</p>
+                  <strong id="crmDetailStatus">-</strong>
+                </article>
+                <article class="crm-detail-item">
+                  <p>Reserva</p>
+                  <strong id="crmDetailReservationStatus">-</strong>
+                </article>
+                <article class="crm-detail-item">
+                  <p>Reembolso</p>
+                  <strong id="crmDetailRefundStatus">-</strong>
+                </article>
+                <article class="crm-detail-item">
+                  <p>Canal</p>
+                  <strong id="crmDetailChannel">-</strong>
+                </article>
+                <article class="crm-detail-item">
+                  <p>Monto</p>
+                  <strong id="crmDetailAmount">-</strong>
+                </article>
+                <article class="crm-detail-item">
+                  <p>Factura</p>
+                  <strong id="crmDetailInvoice">-</strong>
+                </article>
+                <article class="crm-detail-item">
+                  <p>Ultima actualizacion</p>
+                  <strong id="crmDetailLastUpdate">-</strong>
+                </article>
+              </div>
+              <article class="crm-detail-message">
+                <h3>Descripcion del ticket</h3>
+                <p id="crmDetailMessage">-</p>
+              </article>
+            </div>
+          </section>
+        </section>
+      </section>
+
       <section class="admin-view" data-admin-view="sucursales">
         <section class="panel card">
           <div class="view-head">
             <h2>Sucursales</h2>
-            <p>Estado operativo por ubicacion y cobertura regional.</p>
+            <p>Vista general por sede con gerente responsable y ubicacion operativa.</p>
           </div>
           <div class="branches-grid">
             <article class="card branch-card">
               <h3>Monterrey Centro</h3>
+              <p><strong>Gerente:</strong> Ana Lucia Herrera</p>
+              <p><strong>Contacto:</strong> 81 2044 1101 | ana.herrera@cuidado-pug.com</p>
+              <p><strong>Ubicacion:</strong> Av. Juarez 510, Centro, Monterrey, NL</p>
               <p>Flota disponible: 42 unidades</p>
               <p>Personal activo: 18</p>
               <p>Horario: 08:00 - 20:00</p>
             </article>
             <article class="card branch-card">
               <h3>Apodaca</h3>
+              <p><strong>Gerente:</strong> Rogelio Cardenas</p>
+              <p><strong>Contacto:</strong> 81 2099 3302 | rogelio.cardenas@cuidado-pug.com</p>
+              <p><strong>Ubicacion:</strong> Carretera Miguel Aleman KM 12, Apodaca, NL</p>
               <p>Flota disponible: 27 unidades</p>
               <p>Personal activo: 12</p>
               <p>Horario: 07:00 - 22:00</p>
             </article>
             <article class="card branch-card">
               <h3>San Nicolas</h3>
+              <p><strong>Gerente:</strong> Maria Fernanda Solis</p>
+              <p><strong>Contacto:</strong> 81 2140 2288 | m.solis@cuidado-pug.com</p>
+              <p><strong>Ubicacion:</strong> Av. Universidad 1300, San Nicolas de los Garza, NL</p>
               <p>Flota disponible: 31 unidades</p>
               <p>Personal activo: 14</p>
               <p>Horario: 08:00 - 21:00</p>
@@ -297,31 +371,30 @@
         <section class="panel card">
           <div class="view-head">
             <h2>Lista de prioridad</h2>
-            <p>Tareas criticas para operaciones, soporte y mantenimiento.</p>
+            <p>Seguimiento operativo alineado a pagos, CRM, sucursales y ventas.</p>
           </div>
           <div class="priority-columns">
             <article class="card priority-card urgent">
               <h3>Alta prioridad</h3>
-              <ul>
-                <li>Confirmar 7 reservas pendientes</li>
-                <li>Actualizar contratos de proveedores clave</li>
-                <li>Resolver incidencias de pagos duplicados</li>
+              <p class="priority-hint">Alertas de pago con mucho tiempo sin cobertura.</p>
+              <ul id="priorityPaymentAlerts">
+                <li>Cargando alertas de pago...</li>
               </ul>
             </article>
             <article class="card priority-card">
-              <h3>Prioridad media</h3>
+              <h3>Metodos de pago</h3>
               <ul>
-                <li>Revisar disponibilidad de unidades SUV</li>
-                <li>Capacitacion de nuevos ejecutivos</li>
-                <li>Ajustar tarifas de temporada alta</li>
+                <li>Implementar meses sin intereses en flujo de pago.</li>
+                <li>Monitorear aprobaciones por metodo y riesgo de contracargo.</li>
+                <li>Revisar conversion por metodo de cobro en reservas.</li>
               </ul>
             </article>
             <article class="card priority-card">
-              <h3>Backlog</h3>
+              <h3>Operacion comercial</h3>
               <ul>
-                <li>Actualizar plantillas de reportes</li>
-                <li>Optimizar flujo de devoluciones</li>
-                <li>Documentar proceso de auditoria interna</li>
+                <li>CRM para servicio al cliente con casos y SLA.</li>
+                <li>Sucursales con gerente, contacto y ubicacion detallada.</li>
+                <li>Ventas conectadas con cancelaciones y reembolsos.</li>
               </ul>
             </article>
           </div>

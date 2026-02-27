@@ -34,6 +34,11 @@ const cardHolderInput = document.getElementById("cardHolder");
 const cardNumberInput = document.getElementById("cardNumber");
 const cardExpiryInput = document.getElementById("cardExpiry");
 const cardCvvInput = document.getElementById("cardCvv");
+const msiCardHolderInput = document.getElementById("msiCardHolder");
+const msiCardNumberInput = document.getElementById("msiCardNumber");
+const msiCardExpiryInput = document.getElementById("msiCardExpiry");
+const msiCardCvvInput = document.getElementById("msiCardCvv");
+const msiMonthsInput = document.getElementById("msiMonths");
 
 const checkBankInput = document.getElementById("checkBank");
 const checkNumberInput = document.getElementById("checkNumber");
@@ -44,6 +49,7 @@ const depositRefInput = document.getElementById("depositRef");
 const depositDateInput = document.getElementById("depositDate");
 
 const fieldsTarjeta = document.getElementById("fieldsTarjeta");
+const fieldsMsi = document.getElementById("fieldsMsi");
 const fieldsCheque = document.getElementById("fieldsCheque");
 const fieldsDeposito = document.getElementById("fieldsDeposito");
 
@@ -111,6 +117,11 @@ function setMethodRequired(method) {
         cardNumberInput,
         cardExpiryInput,
         cardCvvInput,
+        msiCardHolderInput,
+        msiCardNumberInput,
+        msiCardExpiryInput,
+        msiCardCvvInput,
+        msiMonthsInput,
         checkBankInput,
         checkNumberInput,
         checkHolderInput,
@@ -126,6 +137,12 @@ function setMethodRequired(method) {
         cardNumberInput.required = true;
         cardExpiryInput.required = true;
         cardCvvInput.required = true;
+    } else if (method === "msi") {
+        msiCardHolderInput.required = true;
+        msiCardNumberInput.required = true;
+        msiCardExpiryInput.required = true;
+        msiCardCvvInput.required = true;
+        msiMonthsInput.required = true;
     } else if (method === "cheque") {
         checkBankInput.required = true;
         checkNumberInput.required = true;
@@ -141,6 +158,7 @@ function togglePaymentMethodFields() {
     const method = getSelectedPaymentMethod();
 
     fieldsTarjeta.hidden = method !== "tarjeta";
+    fieldsMsi.hidden = method !== "msi";
     fieldsCheque.hidden = method !== "cheque";
     fieldsDeposito.hidden = method !== "deposito";
 
@@ -208,6 +226,17 @@ function buildPaymentMetadata(method) {
         };
     }
 
+    if (method === "msi") {
+        const digits = msiCardNumberInput.value.replace(/\D/g, "");
+        const last4 = digits.slice(-4) || "0000";
+        const months = Number.parseInt(msiMonthsInput.value || "", 10);
+        const safeMonths = Number.isNaN(months) ? 0 : months;
+        return {
+            reference: `MSI-${safeMonths}M-${last4}`,
+            detail: `Pago con tarjeta a ${safeMonths} MSI terminacion ${last4}`,
+        };
+    }
+
     if (method === "deposito") {
         const depositRef = depositRefInput.value.trim();
         return {
@@ -236,6 +265,20 @@ function validateMethodFields(method) {
     if (method === "cheque") {
         if (!checkNumberInput.value.trim() || !checkBankInput.value.trim() || !checkHolderInput.value.trim()) {
             return "Completa los datos del cheque.";
+        }
+    }
+
+    if (method === "msi") {
+        const digits = msiCardNumberInput.value.replace(/\D/g, "");
+        if (digits.length < 13 || digits.length > 19) {
+            return "Numero de tarjeta invalido para MSI.";
+        }
+        if (String(msiCardCvvInput.value || "").trim().length < 3) {
+            return "CVV invalido para MSI.";
+        }
+        const months = Number.parseInt(msiMonthsInput.value || "", 10);
+        if (Number.isNaN(months) || ![3, 6, 9, 12, 18].includes(months)) {
+            return "Selecciona un plazo valido de MSI.";
         }
     }
 

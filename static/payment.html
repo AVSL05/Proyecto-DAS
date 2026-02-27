@@ -117,6 +117,10 @@
                             <span>Tarjeta debito/credito</span>
                         </label>
                         <label class="method-item">
+                            <input type="radio" name="payment_method" value="msi">
+                            <span>Meses sin intereses</span>
+                        </label>
+                        <label class="method-item">
                             <input type="radio" name="payment_method" value="cheque">
                             <span>Cheque</span>
                         </label>
@@ -143,6 +147,38 @@
                             <div class="form-group">
                                 <label for="cardCvv">CVV</label>
                                 <input id="cardCvv" type="password" inputmode="numeric" maxlength="4" placeholder="123">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="fieldsMsi" class="method-fields" hidden>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="msiCardHolder">Nombre en tarjeta</label>
+                                <input id="msiCardHolder" type="text">
+                            </div>
+                            <div class="form-group">
+                                <label for="msiCardNumber">Numero de tarjeta</label>
+                                <input id="msiCardNumber" type="text" inputmode="numeric" maxlength="19" placeholder="1111 2222 3333 4444">
+                            </div>
+                            <div class="form-group">
+                                <label for="msiCardExpiry">Vencimiento</label>
+                                <input id="msiCardExpiry" type="month">
+                            </div>
+                            <div class="form-group">
+                                <label for="msiCardCvv">CVV</label>
+                                <input id="msiCardCvv" type="password" inputmode="numeric" maxlength="4" placeholder="123">
+                            </div>
+                            <div class="form-group">
+                                <label for="msiMonths">Plazo MSI</label>
+                                <select id="msiMonths">
+                                    <option value="">Selecciona plazo</option>
+                                    <option value="3">3 meses</option>
+                                    <option value="6">6 meses</option>
+                                    <option value="9">9 meses</option>
+                                    <option value="12">12 meses</option>
+                                    <option value="18">18 meses</option>
+                                </select>
                             </div>
                         </div>
                     </section>

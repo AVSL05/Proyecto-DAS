@@ -24,7 +24,32 @@ const vehiclesActive = document.getElementById("vehiclesActive");
 const salesIncomeDay = document.getElementById("salesIncomeDay");
 const salesIncomeMonth = document.getElementById("salesIncomeMonth");
 const salesClosedReservations = document.getElementById("salesClosedReservations");
+const salesCancelledReservations = document.getElementById("salesCancelledReservations");
+const salesRefundPending = document.getElementById("salesRefundPending");
 const salesAvgTicket = document.getElementById("salesAvgTicket");
+const crmTotalCases = document.getElementById("crmTotalCases");
+const crmOpenCases = document.getElementById("crmOpenCases");
+const crmHighPriority = document.getElementById("crmHighPriority");
+const crmRefundPending = document.getElementById("crmRefundPending");
+const crmCasesTable = document.getElementById("crmCasesTable");
+const crmDetailPanel = document.getElementById("crmDetailPanel");
+const crmDetailHint = document.getElementById("crmDetailHint");
+const crmDetailBody = document.getElementById("crmDetailBody");
+const crmDetailCaseId = document.getElementById("crmDetailCaseId");
+const crmDetailFolio = document.getElementById("crmDetailFolio");
+const crmDetailClient = document.getElementById("crmDetailClient");
+const crmDetailContact = document.getElementById("crmDetailContact");
+const crmDetailType = document.getElementById("crmDetailType");
+const crmDetailPriority = document.getElementById("crmDetailPriority");
+const crmDetailStatus = document.getElementById("crmDetailStatus");
+const crmDetailReservationStatus = document.getElementById("crmDetailReservationStatus");
+const crmDetailRefundStatus = document.getElementById("crmDetailRefundStatus");
+const crmDetailChannel = document.getElementById("crmDetailChannel");
+const crmDetailAmount = document.getElementById("crmDetailAmount");
+const crmDetailInvoice = document.getElementById("crmDetailInvoice");
+const crmDetailLastUpdate = document.getElementById("crmDetailLastUpdate");
+const crmDetailMessage = document.getElementById("crmDetailMessage");
+const priorityPaymentAlerts = document.getElementById("priorityPaymentAlerts");
 
 const logoutBtn = document.getElementById("logoutBtn");
 const goClient = document.getElementById("goClient");
@@ -62,6 +87,7 @@ const orgEmployeesMeta = document.getElementById("orgEmployeesMeta");
 const orgEmployeesList = document.getElementById("orgEmployeesList");
 
 const DEFAULT_ADMIN_VIEW = "configuracion";
+let crmCasesCache = [];
 
 function buildOrgTeam(role, area, employees) {
   return employees.map((employee) => ({
@@ -580,12 +606,90 @@ function formatCurrency(value) {
 }
 
 function formatSalesStatus(status, isPaid) {
-  if (isPaid) return "Pagado";
   const normalized = String(status || "").toLowerCase();
+  if (normalized === "accepted" || isPaid) return "Pagado";
+  if (normalized === "refunded" || normalized === "reimbursed") return "Reembolsado";
+  if (normalized === "no_aplica") return "No aplica";
   if (normalized === "pending") return "Pendiente";
   if (normalized === "cancelled") return "Cancelado";
   if (normalized === "completed") return "Completado";
   return normalized || "-";
+}
+
+function formatPaymentMethod(method) {
+  const normalized = String(method || "").toLowerCase();
+  if (normalized === "tarjeta") return "Tarjeta";
+  if (normalized === "cheque") return "Cheque";
+  if (normalized === "deposito") return "Deposito";
+  if (normalized === "efectivo") return "Efectivo";
+  if (normalized === "msi") return "Meses sin intereses";
+  if (normalized === "sin_registro") return "Sin registro";
+  return normalized || "-";
+}
+
+function formatReservationStatus(status) {
+  const normalized = String(status || "").toLowerCase();
+  if (normalized === "pending") return "Pendiente";
+  if (normalized === "confirmed") return "Confirmada";
+  if (normalized === "in_progress") return "En curso";
+  if (normalized === "completed") return "Completada";
+  if (normalized === "cancelled") return "Cancelada";
+  return normalized || "-";
+}
+
+function formatRefundStatus(status) {
+  const normalized = String(status || "").toLowerCase();
+  if (normalized === "pendiente") return "Pendiente";
+  if (normalized === "reembolsado") return "Reembolsado";
+  return "No aplica";
+}
+
+function formatPriority(priority) {
+  const normalized = String(priority || "").toLowerCase();
+  if (normalized === "alta") return "Alta";
+  if (normalized === "media") return "Media";
+  if (normalized === "baja") return "Baja";
+  return normalized || "-";
+}
+
+function resetCrmDetail() {
+  if (!crmDetailHint || !crmDetailBody) return;
+  crmDetailHint.hidden = false;
+  crmDetailBody.hidden = true;
+  if (crmDetailPanel) {
+    crmDetailPanel.classList.remove("expanded");
+  }
+}
+
+function fillCrmDetail(field, value) {
+  if (!field) return;
+  field.textContent = value || "-";
+}
+
+function renderCrmDetail(caseItem) {
+  if (!caseItem || !crmDetailHint || !crmDetailBody) return;
+
+  const contactParts = [caseItem.email, caseItem.phone].filter(Boolean);
+  fillCrmDetail(crmDetailCaseId, caseItem.case_id || "-");
+  fillCrmDetail(crmDetailFolio, caseItem.folio || "-");
+  fillCrmDetail(crmDetailClient, caseItem.client || "Sin cliente");
+  fillCrmDetail(crmDetailContact, contactParts.join(" | ") || "-");
+  fillCrmDetail(crmDetailType, caseItem.case_type || "-");
+  fillCrmDetail(crmDetailPriority, formatPriority(caseItem.priority));
+  fillCrmDetail(crmDetailStatus, caseItem.status || "-");
+  fillCrmDetail(crmDetailReservationStatus, formatReservationStatus(caseItem.reservation_status));
+  fillCrmDetail(crmDetailRefundStatus, formatRefundStatus(caseItem.refund_status));
+  fillCrmDetail(crmDetailChannel, caseItem.channel || "-");
+  fillCrmDetail(crmDetailAmount, formatCurrency(caseItem.amount));
+  fillCrmDetail(crmDetailInvoice, caseItem.invoice_number || "-");
+  fillCrmDetail(crmDetailLastUpdate, formatDate(caseItem.last_update));
+  fillCrmDetail(crmDetailMessage, caseItem.message || "Sin descripcion adicional.");
+
+  crmDetailHint.hidden = true;
+  crmDetailBody.hidden = false;
+  if (crmDetailPanel) {
+    crmDetailPanel.classList.add("expanded");
+  }
 }
 
 function renderStatusOptions(options, selected) {
@@ -833,6 +937,8 @@ async function loadSales() {
     !salesIncomeDay ||
     !salesIncomeMonth ||
     !salesClosedReservations ||
+    !salesCancelledReservations ||
+    !salesRefundPending ||
     !salesAvgTicket
   ) {
     return;
@@ -845,10 +951,12 @@ async function loadSales() {
   salesIncomeDay.textContent = formatCurrency(totals.day);
   salesIncomeMonth.textContent = formatCurrency(totals.month);
   salesClosedReservations.textContent = String(totals.closed_reservations ?? 0);
+  salesCancelledReservations.textContent = String(totals.cancelled_reservations ?? 0);
+  salesRefundPending.textContent = String(totals.refund_pending ?? 0);
   salesAvgTicket.textContent = formatCurrency(totals.average_ticket);
 
   if (!transactions.length) {
-    salesTable.innerHTML = '<tr><td colspan="5">No hay transacciones</td></tr>';
+    salesTable.innerHTML = '<tr><td colspan="8">No hay transacciones</td></tr>';
     return;
   }
 
@@ -859,9 +967,92 @@ async function loadSales() {
           <td>${escapeHtml(transaction.folio || `VT-${transaction.id ?? "-"}`)}</td>
           <td>${escapeHtml(transaction.client || "Sin cliente")}</td>
           <td>${escapeHtml(transaction.channel || "-")}</td>
+          <td>${escapeHtml(formatPaymentMethod(transaction.payment_method))}</td>
           <td>${escapeHtml(formatCurrency(transaction.amount))}</td>
+          <td>${escapeHtml(formatReservationStatus(transaction.reservation_status))}</td>
+          <td>${escapeHtml(formatRefundStatus(transaction.refund_status))}</td>
           <td>${escapeHtml(formatSalesStatus(transaction.status, transaction.is_paid))}</td>
         </tr>
+      `;
+    })
+    .join("");
+}
+
+async function loadCrm() {
+  if (
+    !crmCasesTable ||
+    !crmTotalCases ||
+    !crmOpenCases ||
+    !crmHighPriority ||
+    !crmRefundPending
+  ) {
+    return;
+  }
+
+  const data = await apiRequest("/api/admin/crm");
+  const totals = data.totals || {};
+  const cases = Array.isArray(data.cases) ? data.cases : [];
+  crmCasesCache = cases;
+
+  crmTotalCases.textContent = String(totals.total_cases ?? 0);
+  crmOpenCases.textContent = String(totals.open_cases ?? 0);
+  crmHighPriority.textContent = String(totals.high_priority ?? 0);
+  crmRefundPending.textContent = String(totals.refund_pending ?? 0);
+
+  if (!cases.length) {
+    crmCasesTable.innerHTML = '<tr><td colspan="7">No hay casos CRM</td></tr>';
+    resetCrmDetail();
+    return;
+  }
+
+  crmCasesTable.innerHTML = cases
+    .map((item, index) => {
+      const slaRisk = item.sla_at_risk ? " (Riesgo SLA)" : "";
+      return `
+        <tr>
+          <td>
+            <input type="checkbox" data-crm-case-index="${index}" aria-label="Seleccionar caso ${escapeHtml(item.case_id || index + 1)}" />
+          </td>
+          <td>${escapeHtml(item.folio || `VT-${item.reservation_id ?? "-"}`)}</td>
+          <td>
+            <strong>${escapeHtml(item.client || "Sin cliente")}</strong><br>
+            <small>${escapeHtml(item.email || "-")}</small>
+          </td>
+          <td>${escapeHtml(item.case_type || "-")}</td>
+          <td>${escapeHtml(formatPriority(item.priority))}</td>
+          <td>${escapeHtml(item.status || "-")}</td>
+          <td>${escapeHtml(formatDate(item.last_update))}${escapeHtml(slaRisk)}</td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  resetCrmDetail();
+}
+
+async function loadPaymentAlerts() {
+  if (!priorityPaymentAlerts) return;
+
+  const data = await apiRequest("/api/admin/payment-alerts");
+  const alerts = Array.isArray(data.alerts) ? data.alerts : [];
+  const threshold = data.threshold_days ?? 45;
+
+  if (!alerts.length) {
+    priorityPaymentAlerts.innerHTML = `<li>No hay alertas de pago mayores a ${threshold} dias.</li>`;
+    return;
+  }
+
+  priorityPaymentAlerts.innerHTML = alerts
+    .slice(0, 6)
+    .map((alert) => {
+      const clientLabel = alert.client || "Sin cliente";
+      const amountLabel = formatCurrency(alert.amount_due);
+      return `
+        <li>
+          ${escapeHtml(clientLabel)} | ${escapeHtml(alert.folio || `VT-${alert.reservation_id ?? "-"}`)} |
+          ${escapeHtml(String(alert.days_without_payment ?? 0))} dias sin pago |
+          ${escapeHtml(amountLabel)}
+        </li>
       `;
     })
     .join("");
@@ -998,7 +1189,7 @@ async function saveReservation(reservationId) {
   });
 
   showMessage(`Reservacion #${reservationId} actualizada`);
-  await Promise.all([loadSummary(), loadReservations(), loadSales(), loadVehicles()]);
+  await Promise.all([loadSummary(), loadReservations(), loadSales(), loadVehicles(), loadCrm(), loadPaymentAlerts()]);
 }
 
 async function saveVehicle(vehicleId) {
@@ -1090,9 +1281,32 @@ usersTable.addEventListener("click", async (event) => {
   }
 });
 
+crmCasesTable.addEventListener("change", (event) => {
+  const input = event.target.closest("[data-crm-case-index]");
+  if (!input) return;
+
+  const caseIndex = Number.parseInt(input.dataset.crmCaseIndex || "", 10);
+  if (Number.isNaN(caseIndex)) return;
+
+  const checkboxes = crmCasesTable.querySelectorAll("[data-crm-case-index]");
+  checkboxes.forEach((checkboxNode) => {
+    if (checkboxNode !== input) {
+      checkboxNode.checked = false;
+    }
+  });
+
+  if (!input.checked) {
+    resetCrmDetail();
+    return;
+  }
+
+  const selectedCase = crmCasesCache[caseIndex];
+  renderCrmDetail(selectedCase);
+});
+
 refreshReservations.addEventListener("click", async () => {
   try {
-    await Promise.all([loadReservations(), loadSales(), loadVehicles()]);
+    await Promise.all([loadReservations(), loadSales(), loadVehicles(), loadCrm(), loadPaymentAlerts()]);
   } catch (error) {
     showMessage(error.message, "err");
   }
@@ -1139,7 +1353,15 @@ async function bootstrap() {
 
     adminName.textContent = `${currentUser.full_name} (${currentUser.email})`;
 
-    await Promise.all([loadSummary(), loadSales(), loadReservations(), loadVehicles(), loadUsers()]);
+    await Promise.all([
+      loadSummary(),
+      loadSales(),
+      loadReservations(),
+      loadVehicles(),
+      loadUsers(),
+      loadCrm(),
+      loadPaymentAlerts(),
+    ]);
   } catch (error) {
     showMessage(error.message, "err");
   }
