@@ -4,16 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pago de reservacion | Cuidado con el pug</title>
-    <link rel="stylesheet" href="/static/styles.css?v=payment1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css?v=7">
 </head>
 <body>
+    <!-- Header -->
     <header>
-        <a class="btn btn-login" href="/">Inicio</a>
-        <div class="container">
-            <h1>Pago de reservacion</h1>
-            <p class="subtitle">Confirma tus datos y el metodo de pago</p>
+        <div class="header-container">
+            <div class="header-left">
+                <h1>🚌 Cuidado con el pug</h1>
+            </div>
+            <div class="header-right">
+                <a class="btn btn-login" href="/">Inicio</a>
+            </div>
         </div>
     </header>
+
+    <!-- Page Title -->
+    <div class="container" style="margin-top: 30px; margin-bottom: 20px;">
+        <h2 style="margin: 0; color: #3575F6;">Pago de reservación</h2>
+        <p style="color: #666; margin-top: 8px;">Confirma tus datos y el método de pago</p>
+    </div>
 
     <main class="container">
         <section class="payment-layout">
@@ -237,6 +250,20 @@
             </article>
         </section>
     </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p><strong>Cuidado con el pug</strong></p>
+            <div class="footer-links">
+                <a href="#" onclick="alert('Sección en desarrollo')">Términos y condiciones</a>
+                <a href="#" onclick="alert('Sección en desarrollo')">Información legal</a>
+                <a href="#" onclick="alert('Sección en desarrollo')">Aviso de privacidad</a>
+            </div>
+            <p class="footer-copyright">Cuidado con el pug N.L. Calle linsana #69, cp 42067, San Nicolas de los Garza, Mexico</p>
+            <p class="footer-copyright">Copyright 2026 Cuidado con el pug | Todos los derechos reservados</p>
+        </div>
+    </footer>
 
     <script src="/static/payment.js?v=payment1"></script>
 </body>

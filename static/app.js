@@ -176,8 +176,8 @@ function displaySearchResults(data, origen, destino, fecha, pasajeros) {
     
     let html = `
         <div style="margin: 30px 0 20px;">
-            <h3>Vehículos disponibles (${data.total} encontrados)</h3>
-            <p style="color: #666;">
+            <h3 style="color: white;">Vehículos disponibles (${data.total} encontrados)</h3>
+            <p style="color: white; font-size: 1.05em;">
                 📍 ${origen} → ${destino} | 📅 ${fecha} | 👥 ${pasajeros} pasajero(s)
             </p>
         </div>

@@ -4,15 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cuidado con el pug - Renta de Transportes</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css?v=7">
 </head>
 <body>
     <!-- Header -->
     <header>
-        <a class="btn btn-login" href="/login">Login</a>
-        <div class="container">
-            <h1>🚌 Cuidado con el pug</h1>
-            <p class="subtitle">Sistema de Renta de Transportes</p>
+        <div class="header-container">
+            <div class="header-left">
+                <h1>🚌 Cuidado con el pug</h1>
+            </div>
+            <div class="header-right">
+                <a class="btn btn-login" href="/login">Iniciar sesión</a>
+            </div>
         </div>
     </header>
 
@@ -131,17 +137,17 @@
     <footer>
         <div class="container">
             <p><strong>Cuidado con el pug</strong></p>
-            <p>N.L., Calle linsana #69, cp 42067, San Nicolas de los Garza, Mexico</p>
-            <p>Copyright 2026 | Todos los derechos reservados</p>
             <div class="footer-links">
                 <a href="#" onclick="alert('Sección en desarrollo')">Términos y condiciones</a>
                 <a href="#" onclick="alert('Sección en desarrollo')">Información legal</a>
                 <a href="#" onclick="alert('Sección en desarrollo')">Aviso de privacidad</a>
             </div>
+            <p class="footer-copyright">Cuidado con el pug N.L. Calle linsana #69, cp 42067, San Nicolas de los Garza, Mexico</p>
+            <p class="footer-copyright">Copyright 2026 Cuidado con el pug | Todos los derechos reservados</p>
         </div>
     </footer>
 
-    <script src="/static/app.js?v=5"></script>
+    <script src="/static/app.js?v=7"></script>
     <script src="/static/select-vehicle-override.js?v=1"></script>
 </body>
 </html>
