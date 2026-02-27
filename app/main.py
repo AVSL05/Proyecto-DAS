@@ -88,3 +88,8 @@ def reset_password_page(request: Request):
 @app.get("/admin", response_class=HTMLResponse, include_in_schema=False)
 def admin_dashboard_page(request: Request):
     return templates.TemplateResponse("admin_dashboard.html", {"request": request})
+
+
+@app.get("/payment", include_in_schema=False)
+def payment_page():
+    return FileResponse(str(STATIC_DIR / "payment.html"))

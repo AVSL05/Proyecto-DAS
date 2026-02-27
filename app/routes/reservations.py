@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
-from datetime import datetime, timezone, timedelta
+from datetime import date, datetime, timezone, timedelta
+from decimal import Decimal, ROUND_HALF_UP
 from typing import List, Optional
 
 from app.db import get_db
-from app.db_models import Reservation, Vehicle, User
+from app.db_models import Payment, Reservation, Vehicle, User
+from app.routes.promotions import promotions_db
 from app.schemas_reservations import (
     ReservationCreate, ReservationUpdate, ReservationOut, ReservationListOut, ReservationStats
 )
@@ -99,6 +101,24 @@ def calculate_reservation_price(vehicle: Vehicle, start_date: datetime, end_date
     return total_days, price_per_day, total_price
 
 
+def get_active_promotion(promotion_id: Optional[int]) -> Optional[dict]:
+    if not promotion_id:
+        return None
+
+    today = date.today()
+    promotion = next((promo for promo in promotions_db if promo["id"] == promotion_id), None)
+    if not promotion:
+        raise HTTPException(status_code=404, detail="Promocion no encontrada")
+
+    is_active = bool(promotion.get("activa"))
+    starts = promotion.get("fecha_inicio")
+    ends = promotion.get("fecha_fin")
+    if not is_active or starts is None or ends is None or not (starts <= today <= ends):
+        raise HTTPException(status_code=400, detail="Promocion no vigente")
+
+    return promotion
+
+
 @router.post("/", response_model=ReservationOut, status_code=status.HTTP_201_CREATED)
 def create_reservation(
     payload: ReservationCreate,
@@ -132,8 +152,30 @@ def create_reservation(
     total_days, price_per_day, total_price = calculate_reservation_price(
         vehicle, payload.start_date, payload.end_date
     )
-    
-    # Crear reservación
+
+    promotion = get_active_promotion(payload.promotion_id)
+    promotion_note = None
+    if promotion:
+        discount_percent = Decimal(str(promotion.get("descuento", 0)))
+        discount_ratio = discount_percent / Decimal("100")
+        discount_amount = (total_price * discount_ratio).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        total_price = (total_price - discount_amount).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        if total_price < 0:
+            total_price = Decimal("0.00")
+        promotion_note = f"Promocion aplicada: {promotion['titulo']} ({promotion['descuento']}% OFF)"
+
+    final_notes_parts = []
+    if payload.notes:
+        final_notes_parts.append(payload.notes.strip())
+    if promotion_note:
+        final_notes_parts.append(promotion_note)
+    final_notes = " | ".join([part for part in final_notes_parts if part]) or None
+
+    payment_method = (payload.payment_method or "efectivo").strip().lower()
+    payment_reference = (payload.payment_reference or "").strip() or None
+    payment_notes = (payload.payment_notes or "").strip() or None
+
+    # Crear reservacion y pago en una sola transaccion
     reservation = Reservation(
         user_id=current_user.id,
         vehicle_id=payload.vehicle_id,
@@ -145,10 +187,23 @@ def create_reservation(
         price_per_day=price_per_day,
         total_price=total_price,
         status='pending',
-        notes=payload.notes
+        notes=final_notes
     )
-    
+
     db.add(reservation)
+    db.flush()
+
+    payment = Payment(
+        reservation_id=reservation.id,
+        user_id=current_user.id,
+        method=payment_method,
+        amount=total_price,
+        status="accepted",
+        reference=payment_reference,
+        details=payment_notes,
+    )
+
+    db.add(payment)
     db.commit()
     db.refresh(reservation)
     
@@ -324,3 +379,4 @@ def cancel_reservation(
     db.commit()
     
     return {"message": "Reservación cancelada exitosamente", "reservation_id": reservation_id}
+

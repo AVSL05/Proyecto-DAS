@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session, joinedload
 
 from app.db import get_db
-from app.db_models import Reservation, User, UserRole, Vehicle
+from app.db_models import Payment, Reservation, User, UserRole, Vehicle
 from app.security import decode_access_token
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
@@ -15,6 +15,8 @@ router = APIRouter(prefix="/api/admin", tags=["Admin"])
 ALLOWED_RESERVATION_STATUS = {"pending", "confirmed", "in_progress", "completed", "cancelled"}
 ALLOWED_VEHICLE_STATUS = {"available", "reserved", "in_use", "maintenance", "unavailable"}
 VALID_ROLES = {UserRole.CLIENT.value, UserRole.ADMIN.value}
+PAID_RESERVATION_STATUS = {"confirmed", "in_progress", "completed"}
+ACCEPTED_PAYMENT_STATUS = {"accepted"}
 
 
 class AdminReservationUpdate(BaseModel):
@@ -103,6 +105,139 @@ def get_admin_summary(
             "total": total_vehicles,
             "active": active_vehicles,
         },
+    }
+
+
+@router.get("/sales")
+def get_admin_sales(
+    limit: int = Query(default=50, ge=1, le=200),
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    now_utc = datetime.now(timezone.utc)
+    day_start = now_utc.replace(hour=0, minute=0, second=0, microsecond=0)
+    month_start = day_start.replace(day=1)
+
+    def to_decimal(value) -> Decimal:
+        if value is None:
+            return Decimal("0")
+        if isinstance(value, Decimal):
+            return value
+        return Decimal(str(value))
+
+    def to_utc_datetime(value: Optional[datetime]) -> Optional[datetime]:
+        if value is None:
+            return None
+        if value.tzinfo is None:
+            return value.replace(tzinfo=timezone.utc)
+        return value.astimezone(timezone.utc)
+
+    accepted_payments = (
+        db.query(Payment)
+        .options(
+            joinedload(Payment.reservation).joinedload(Reservation.user),
+        )
+        .filter(Payment.status.in_(ACCEPTED_PAYMENT_STATUS))
+        .all()
+    )
+
+    # Fallback para reservaciones antiguas sin registro en payments.
+    legacy_paid_reservations = (
+        db.query(Reservation)
+        .options(joinedload(Reservation.user))
+        .filter(
+            Reservation.status.in_(PAID_RESERVATION_STATUS),
+            ~Reservation.payment.has(),
+        )
+        .all()
+    )
+
+    day_total = Decimal("0")
+    month_total = Decimal("0")
+    paid_total = Decimal("0")
+    paid_count = 0
+
+    for payment in accepted_payments:
+        amount = to_decimal(payment.amount)
+        created_at = to_utc_datetime(payment.created_at)
+
+        paid_total += amount
+        paid_count += 1
+
+        if created_at and created_at >= month_start:
+            month_total += amount
+        if created_at and created_at >= day_start:
+            day_total += amount
+
+    for reservation in legacy_paid_reservations:
+        amount = to_decimal(reservation.total_price)
+        created_at = to_utc_datetime(reservation.created_at)
+
+        paid_total += amount
+        paid_count += 1
+
+        if created_at and created_at >= month_start:
+            month_total += amount
+        if created_at and created_at >= day_start:
+            day_total += amount
+
+    closed_reservations = (
+        db.query(Reservation)
+        .filter(Reservation.status == "completed")
+        .count()
+    )
+
+    average_ticket = (paid_total / paid_count) if paid_count else Decimal("0")
+
+    transactions = []
+
+    for payment in accepted_payments:
+        reservation = payment.reservation
+        if not reservation:
+            continue
+        transactions.append(
+            {
+                "id": reservation.id,
+                "folio": f"VT-{reservation.id:04d}",
+                "client": reservation.user.full_name if reservation.user else "Sin cliente",
+                "channel": reservation.pickup_location or "-",
+                "amount": float(to_decimal(payment.amount)),
+                "status": (payment.status or "").strip().lower() or "accepted",
+                "is_paid": True,
+                "created_at": payment.created_at,
+            }
+        )
+
+    for reservation in legacy_paid_reservations:
+        status_value = (reservation.status or "").strip().lower()
+        transactions.append(
+            {
+                "id": reservation.id,
+                "folio": f"VT-{reservation.id:04d}",
+                "client": reservation.user.full_name if reservation.user else "Sin cliente",
+                "channel": reservation.pickup_location or "-",
+                "amount": float(to_decimal(reservation.total_price)),
+                "status": status_value,
+                "is_paid": status_value in PAID_RESERVATION_STATUS,
+                "created_at": reservation.created_at,
+            }
+        )
+
+    transactions.sort(
+        key=lambda item: to_utc_datetime(item.get("created_at")) or datetime.min.replace(tzinfo=timezone.utc),
+        reverse=True,
+    )
+    transactions = transactions[:limit]
+
+    return {
+        "totals": {
+            "day": float(day_total),
+            "month": float(month_total),
+            "closed_reservations": closed_reservations,
+            "average_ticket": float(average_ticket),
+            "paid_count": paid_count,
+        },
+        "transactions": transactions,
     }
 
 

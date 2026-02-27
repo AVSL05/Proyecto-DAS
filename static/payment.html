@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago de reservacion | Cuidado con el pug</title>
+    <link rel="stylesheet" href="/static/styles.css?v=payment1">
+</head>
+<body>
+    <header>
+        <a class="btn btn-login" href="/">Inicio</a>
+        <div class="container">
+            <h1>Pago de reservacion</h1>
+            <p class="subtitle">Confirma tus datos y el metodo de pago</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="payment-layout">
+            <article class="card payment-summary-card">
+                <h2>Detalle del viaje</h2>
+                <div class="summary-grid-list">
+                    <div class="summary-row">
+                        <span>Vehiculo</span>
+                        <strong id="summaryVehicle">-</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Origen</span>
+                        <strong id="summaryOrigin">-</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Destino</span>
+                        <strong id="summaryDestination">-</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Pasajeros</span>
+                        <strong id="summaryPassengers">-</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Precio por dia</span>
+                        <strong id="summaryPricePerDay">-</strong>
+                    </div>
+                </div>
+
+                <h3>Promocion vigente</h3>
+                <div class="form-group">
+                    <label for="promotionSelect">Selecciona una promocion</label>
+                    <select id="promotionSelect">
+                        <option value="">Sin promocion</option>
+                    </select>
+                </div>
+                <p id="promotionHelp" class="payment-help">Se aplicara automaticamente al total final.</p>
+
+                <h3>Resumen de cobro</h3>
+                <div class="totals-box">
+                    <div class="totals-row">
+                        <span>Subtotal</span>
+                        <strong id="summarySubtotal">$0</strong>
+                    </div>
+                    <div class="totals-row">
+                        <span>Descuento</span>
+                        <strong id="summaryDiscount">$0</strong>
+                    </div>
+                    <div class="totals-row total">
+                        <span>Total a pagar</span>
+                        <strong id="summaryTotal">$0</strong>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>Informacion de pago</h2>
+                <form id="paymentForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="payerName">Nombre completo</label>
+                            <input id="payerName" name="payer_name" type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="payerEmail">Correo</label>
+                            <input id="payerEmail" name="payer_email" type="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="payerPhone">Telefono</label>
+                            <input id="payerPhone" name="payer_phone" type="tel" required>
+                        </div>
+                    </div>
+
+                    <h3>Datos de reservacion</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="startDate">Fecha de salida</label>
+                            <input id="startDate" name="start_date" type="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="endDate">Fecha de regreso</label>
+                            <input id="endDate" name="end_date" type="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pickupLocation">Lugar de salida</label>
+                            <input id="pickupLocation" name="pickup_location" type="text" minlength="3" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="returnLocation">Lugar de regreso</label>
+                            <input id="returnLocation" name="return_location" type="text" minlength="3" required>
+                        </div>
+                    </div>
+
+                    <h3>Metodo de pago</h3>
+                    <div class="payment-method-grid">
+                        <label class="method-item">
+                            <input type="radio" name="payment_method" value="efectivo" checked>
+                            <span>Efectivo</span>
+                        </label>
+                        <label class="method-item">
+                            <input type="radio" name="payment_method" value="tarjeta">
+                            <span>Tarjeta debito/credito</span>
+                        </label>
+                        <label class="method-item">
+                            <input type="radio" name="payment_method" value="cheque">
+                            <span>Cheque</span>
+                        </label>
+                        <label class="method-item">
+                            <input type="radio" name="payment_method" value="deposito">
+                            <span>Deposito</span>
+                        </label>
+                    </div>
+
+                    <section id="fieldsTarjeta" class="method-fields" hidden>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="cardHolder">Nombre en tarjeta</label>
+                                <input id="cardHolder" type="text">
+                            </div>
+                            <div class="form-group">
+                                <label for="cardNumber">Numero de tarjeta</label>
+                                <input id="cardNumber" type="text" inputmode="numeric" maxlength="19" placeholder="1111 2222 3333 4444">
+                            </div>
+                            <div class="form-group">
+                                <label for="cardExpiry">Vencimiento</label>
+                                <input id="cardExpiry" type="month">
+                            </div>
+                            <div class="form-group">
+                                <label for="cardCvv">CVV</label>
+                                <input id="cardCvv" type="password" inputmode="numeric" maxlength="4" placeholder="123">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="fieldsCheque" class="method-fields" hidden>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="checkBank">Banco emisor</label>
+                                <input id="checkBank" type="text">
+                            </div>
+                            <div class="form-group">
+                                <label for="checkNumber">Numero de cheque</label>
+                                <input id="checkNumber" type="text">
+                            </div>
+                            <div class="form-group">
+                                <label for="checkHolder">Titular del cheque</label>
+                                <input id="checkHolder" type="text">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="fieldsDeposito" class="method-fields" hidden>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="depositBank">Banco de deposito</label>
+                                <input id="depositBank" type="text">
+                            </div>
+                            <div class="form-group">
+                                <label for="depositRef">Referencia de deposito</label>
+                                <input id="depositRef" type="text">
+                            </div>
+                            <div class="form-group">
+                                <label for="depositDate">Fecha de deposito</label>
+                                <input id="depositDate" type="date">
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="form-group">
+                        <label for="paymentNotes">Notas adicionales</label>
+                        <textarea id="paymentNotes" rows="3" placeholder="Ejemplo: entregar en terminal norte"></textarea>
+                    </div>
+
+                    <label class="terms-check">
+                        <input id="acceptTerms" type="checkbox" required>
+                        <span>Confirmo que los datos son correctos y autorizo el proceso de pago.</span>
+                    </label>
+
+                    <div class="payment-actions">
+                        <button class="btn btn-secondary" type="button" id="cancelPaymentBtn">Cancelar</button>
+                        <button class="btn btn-primary" type="submit" id="confirmPaymentBtn">Confirmar pago y reservar</button>
+                    </div>
+                </form>
+
+                <p id="paymentMessage" class="payment-message" hidden></p>
+            </article>
+        </section>
+    </main>
+
+    <script src="/static/payment.js?v=payment1"></script>
+</body>
+</html>

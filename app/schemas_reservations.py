@@ -61,6 +61,10 @@ class VehicleListOut(BaseModel):
 
 class ReservationBase(BaseModel):
     vehicle_id: int
+    promotion_id: Optional[int] = Field(None, ge=1, description="ID de promocion activa")
+    payment_method: Optional[str] = Field(None, description="efectivo, tarjeta, cheque, deposito")
+    payment_reference: Optional[str] = Field(None, max_length=255)
+    payment_notes: Optional[str] = Field(None, max_length=1500)
     start_date: datetime
     end_date: datetime
     pickup_location: str = Field(..., min_length=3, max_length=200)
@@ -75,6 +79,17 @@ class ReservationBase(BaseModel):
             if end_date <= start_date:
                 raise ValueError('La fecha de fin debe ser posterior a la fecha de inicio')
         return end_date
+
+    @field_validator('payment_method')
+    @classmethod
+    def validate_payment_method(cls, value):
+        if value is None:
+            return value
+        allowed = {"efectivo", "tarjeta", "cheque", "deposito"}
+        normalized = value.strip().lower()
+        if normalized not in allowed:
+            raise ValueError("Metodo de pago invalido")
+        return normalized
 
 
 class ReservationCreate(ReservationBase):

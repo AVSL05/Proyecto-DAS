@@ -29,6 +29,7 @@ class User(Base):
     
     # Relaciones
     reservations = relationship("Reservation", back_populates="user")
+    payments = relationship("Payment", back_populates="user")
 
 class PasswordResetToken(Base):
     __tablename__ = "password_reset_tokens"
@@ -138,3 +139,26 @@ class Reservation(Base):
     # Relaciones
     user = relationship("User", back_populates="reservations")
     vehicle = relationship("Vehicle", back_populates="reservations")
+    payment = relationship("Payment", back_populates="reservation", uselist=False, cascade="all, delete-orphan")
+
+
+class Payment(Base):
+    """Modelo de pagos registrados para reservaciones."""
+    __tablename__ = "payments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    reservation_id = Column(Integer, ForeignKey("reservations.id"), nullable=False, unique=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+
+    method = Column(String(30), nullable=False, default="efectivo", index=True)
+    amount = Column(Numeric(10, 2), nullable=False)
+    currency = Column(String(8), nullable=False, default="MXN")
+    status = Column(String(30), nullable=False, default="accepted", index=True)
+    reference = Column(String(255), nullable=True)
+    details = Column(Text, nullable=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+
+    reservation = relationship("Reservation", back_populates="payment")
+    user = relationship("User", back_populates="payments")

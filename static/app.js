@@ -251,7 +251,7 @@ function selectVehicle(vehicleId, vehicleName, pricePerDay) {
     const reservationData = {
         vehicle_id: vehicleId,
         vehicle_name: vehicleName,
-        price_per_day: pricePerDay,
+        price_per_day: Number(pricePerDay || 0),
         origin: document.getElementById('origen').value,
         destination: document.getElementById('destino').value,
         start_date: document.getElementById('fecha').value,
@@ -260,8 +260,7 @@ function selectVehicle(vehicleId, vehicleName, pricePerDay) {
     
     localStorage.setItem('pending_reservation', JSON.stringify(reservationData));
     
-    // Por ahora mostrar alerta, luego puedes crear una página de reservación
-    alert(`Has seleccionado: ${vehicleName}\nPrecio: $${pricePerDay}/día\n\n✅ Próximamente: página de confirmación de reserva`);
+    window.location.href = '/payment';
 }
 
 // Cargar Promociones

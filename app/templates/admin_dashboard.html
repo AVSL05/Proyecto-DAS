@@ -8,9 +8,14 @@
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">
-      <p class="eyebrow">Cuidado con el pug</p>
-      <h1>Panel administrativo</h1>
+    <div class="brand-wrap">
+      <button id="sidebarToggle" class="btn ghost sidebar-toggle" type="button" aria-controls="adminSidebar" aria-expanded="true">
+        Menu
+      </button>
+      <div class="brand">
+        <p class="eyebrow">Cuidado con el pug</p>
+        <h1>Panel administrativo</h1>
+      </div>
     </div>
     <div class="actions">
       <p id="adminName" class="admin-name"></p>
@@ -19,98 +24,463 @@
     </div>
   </header>
 
-  <main class="layout">
-    <section class="summary-grid" id="summaryGrid">
-      <article class="card stat">
-        <p>Usuarios</p>
-        <strong id="usersTotal">-</strong>
-      </article>
-      <article class="card stat">
-        <p>Reservaciones</p>
-        <strong id="reservationsTotal">-</strong>
-      </article>
-      <article class="card stat">
-        <p>Pendientes</p>
-        <strong id="reservationsPending">-</strong>
-      </article>
-      <article class="card stat">
-        <p>Vehiculos activos</p>
-        <strong id="vehiclesActive">-</strong>
-      </article>
-    </section>
+  <main class="admin-shell">
+    <aside id="adminSidebar" class="sidebar" aria-label="Navegacion administrativa">
+      <p class="sidebar-title">Navegacion</p>
+      <nav class="sidebar-nav">
+        <button class="sidebar-link active" data-sidebar-item="Configuracion" data-sidebar-view="configuracion" type="button">
+          <span class="sidebar-icon">CF</span>
+          <span class="sidebar-label">Configuracion</span>
+        </button>
+        <button class="sidebar-link" data-sidebar-item="Accesibilidad" data-sidebar-view="accesibilidad" type="button">
+          <span class="sidebar-icon">AC</span>
+          <span class="sidebar-label">Accesibilidad</span>
+        </button>
+        <button class="sidebar-link" data-sidebar-item="Ventas" data-sidebar-view="ventas" type="button">
+          <span class="sidebar-icon">VT</span>
+          <span class="sidebar-label">Ventas</span>
+        </button>
+        <button class="sidebar-link" data-sidebar-item="Sucursales" data-sidebar-view="sucursales" type="button">
+          <span class="sidebar-icon">SC</span>
+          <span class="sidebar-label">Sucursales</span>
+        </button>
+        <button class="sidebar-link" data-sidebar-item="Lista de prioridad" data-sidebar-view="prioridad" type="button">
+          <span class="sidebar-icon">LP</span>
+          <span class="sidebar-label">Lista de prioridad</span>
+        </button>
+        <button class="sidebar-link" data-sidebar-item="Organigrama" data-sidebar-view="organigrama" type="button">
+          <span class="sidebar-icon">OG</span>
+          <span class="sidebar-label">Organigrama</span>
+        </button>
+        <button class="sidebar-link" data-sidebar-item="Proveedores" data-sidebar-view="proveedores" type="button">
+          <span class="sidebar-icon">PV</span>
+          <span class="sidebar-label">Proveedores</span>
+        </button>
+      </nav>
+    </aside>
 
-    <section class="panel card">
-      <div class="panel-head">
-        <h2>Gestion de reservaciones</h2>
-        <button id="refreshReservations" class="btn small" type="button">Actualizar</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Cliente</th>
-              <th>Vehiculo</th>
-              <th>Fechas</th>
-              <th>Estatus</th>
-              <th>Notas admin</th>
-              <th>Accion</th>
-            </tr>
-          </thead>
-          <tbody id="reservationsTable">
-            <tr><td colspan="7">Cargando...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+    <section class="layout">
+      <section class="admin-view active" data-admin-view="configuracion">
+        <section class="summary-grid" id="summaryGrid">
+          <article class="card stat">
+            <p>Usuarios</p>
+            <strong id="usersTotal">-</strong>
+          </article>
+          <article class="card stat">
+            <p>Reservaciones</p>
+            <strong id="reservationsTotal">-</strong>
+          </article>
+          <article class="card stat">
+            <p>Pendientes</p>
+            <strong id="reservationsPending">-</strong>
+          </article>
+          <article class="card stat">
+            <p>Vehiculos activos</p>
+            <strong id="vehiclesActive">-</strong>
+          </article>
+        </section>
 
-    <section class="panel card">
-      <div class="panel-head">
-        <h2>Gestion de vehiculos</h2>
-        <button id="refreshVehicles" class="btn small" type="button">Actualizar</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Vehiculo</th>
-              <th>Placa</th>
-              <th>Precio dia</th>
-              <th>Estatus</th>
-              <th>Activo</th>
-              <th>Accion</th>
-            </tr>
-          </thead>
-          <tbody id="vehiclesTable">
-            <tr><td colspan="7">Cargando...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+        <section class="panel card">
+          <div class="panel-head">
+            <h2>Gestion de reservaciones</h2>
+            <button id="refreshReservations" class="btn small" type="button">Actualizar</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Cliente</th>
+                  <th>Vehiculo</th>
+                  <th>Fechas</th>
+                  <th>Estatus</th>
+                  <th>Notas admin</th>
+                  <th>Accion</th>
+                </tr>
+              </thead>
+              <tbody id="reservationsTable">
+                <tr><td colspan="7">Cargando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <section class="panel card">
-      <div class="panel-head">
-        <h2>Gestion de usuarios</h2>
-        <button id="refreshUsers" class="btn small" type="button">Actualizar</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Telefono</th>
-              <th>Rol</th>
-              <th>Accion</th>
-            </tr>
-          </thead>
-          <tbody id="usersTable">
-            <tr><td colspan="6">Cargando...</td></tr>
-          </tbody>
-        </table>
-      </div>
+        <section class="panel card">
+          <div class="panel-head">
+            <h2>Gestion de vehiculos</h2>
+            <button id="refreshVehicles" class="btn small" type="button">Actualizar</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Vehiculo</th>
+                  <th>Placa</th>
+                  <th>Precio dia</th>
+                  <th>Estatus</th>
+                  <th>Activo</th>
+                  <th>Accion</th>
+                </tr>
+              </thead>
+              <tbody id="vehiclesTable">
+                <tr><td colspan="7">Cargando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel card">
+          <div class="panel-head">
+            <h2>Gestion de usuarios</h2>
+            <button id="refreshUsers" class="btn small" type="button">Actualizar</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Email</th>
+                  <th>Telefono</th>
+                  <th>Rol</th>
+                  <th>Accion</th>
+                </tr>
+              </thead>
+              <tbody id="usersTable">
+                <tr><td colspan="6">Cargando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="admin-view" data-admin-view="accesibilidad">
+        <section class="panel card">
+          <div class="view-head">
+            <h2>Accesibilidad</h2>
+            <p>Preferencias para mejorar lectura, contraste y navegacion.</p>
+          </div>
+          <div class="feature-grid">
+            <article class="card feature-card">
+              <h3>Lectura</h3>
+              <label class="setting-row">
+                <span>Tamano de texto grande</span>
+                <input type="checkbox" />
+              </label>
+              <label class="setting-row">
+                <span>Resaltar enlaces</span>
+                <input type="checkbox" />
+              </label>
+              <label class="setting-row">
+                <span>Espaciado adicional</span>
+                <input type="checkbox" />
+              </label>
+            </article>
+            <article class="card feature-card">
+              <h3>Visual</h3>
+              <label class="setting-row">
+                <span>Alto contraste</span>
+                <input type="checkbox" />
+              </label>
+              <label class="setting-row">
+                <span>Reducir animaciones</span>
+                <input type="checkbox" />
+              </label>
+              <label class="setting-row">
+                <span>Modo monocromatico</span>
+                <input type="checkbox" />
+              </label>
+            </article>
+            <article class="card feature-card">
+              <h3>Soporte</h3>
+              <label class="setting-row">
+                <span>Subtitulos autom.</span>
+                <input type="checkbox" />
+              </label>
+              <label class="setting-row">
+                <span>Asistente de voz</span>
+                <input type="checkbox" />
+              </label>
+              <label class="setting-row">
+                <span>Atajos de teclado</span>
+                <input type="checkbox" />
+              </label>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <section class="admin-view" data-admin-view="ventas">
+        <section class="panel card">
+          <div class="view-head">
+            <h2>Ventas</h2>
+            <p>Rendimiento comercial y seguimiento de transacciones.</p>
+          </div>
+          <section class="summary-grid compact-grid">
+            <article class="card stat">
+              <p>Ingresos del dia</p>
+              <strong id="salesIncomeDay">-</strong>
+            </article>
+            <article class="card stat">
+              <p>Ingresos del mes</p>
+              <strong id="salesIncomeMonth">-</strong>
+            </article>
+            <article class="card stat">
+              <p>Reservas cerradas</p>
+              <strong id="salesClosedReservations">-</strong>
+            </article>
+            <article class="card stat">
+              <p>Ticket promedio</p>
+              <strong id="salesAvgTicket">-</strong>
+            </article>
+          </section>
+          <div class="table-wrap mini-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Folio</th>
+                  <th>Cliente</th>
+                  <th>Canal</th>
+                  <th>Monto</th>
+                  <th>Estatus</th>
+                </tr>
+              </thead>
+              <tbody id="salesTable">
+                <tr>
+                  <td colspan="5">Cargando...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="admin-view" data-admin-view="sucursales">
+        <section class="panel card">
+          <div class="view-head">
+            <h2>Sucursales</h2>
+            <p>Estado operativo por ubicacion y cobertura regional.</p>
+          </div>
+          <div class="branches-grid">
+            <article class="card branch-card">
+              <h3>Monterrey Centro</h3>
+              <p>Flota disponible: 42 unidades</p>
+              <p>Personal activo: 18</p>
+              <p>Horario: 08:00 - 20:00</p>
+            </article>
+            <article class="card branch-card">
+              <h3>Apodaca</h3>
+              <p>Flota disponible: 27 unidades</p>
+              <p>Personal activo: 12</p>
+              <p>Horario: 07:00 - 22:00</p>
+            </article>
+            <article class="card branch-card">
+              <h3>San Nicolas</h3>
+              <p>Flota disponible: 31 unidades</p>
+              <p>Personal activo: 14</p>
+              <p>Horario: 08:00 - 21:00</p>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <section class="admin-view" data-admin-view="prioridad">
+        <section class="panel card">
+          <div class="view-head">
+            <h2>Lista de prioridad</h2>
+            <p>Tareas criticas para operaciones, soporte y mantenimiento.</p>
+          </div>
+          <div class="priority-columns">
+            <article class="card priority-card urgent">
+              <h3>Alta prioridad</h3>
+              <ul>
+                <li>Confirmar 7 reservas pendientes</li>
+                <li>Actualizar contratos de proveedores clave</li>
+                <li>Resolver incidencias de pagos duplicados</li>
+              </ul>
+            </article>
+            <article class="card priority-card">
+              <h3>Prioridad media</h3>
+              <ul>
+                <li>Revisar disponibilidad de unidades SUV</li>
+                <li>Capacitacion de nuevos ejecutivos</li>
+                <li>Ajustar tarifas de temporada alta</li>
+              </ul>
+            </article>
+            <article class="card priority-card">
+              <h3>Backlog</h3>
+              <ul>
+                <li>Actualizar plantillas de reportes</li>
+                <li>Optimizar flujo de devoluciones</li>
+                <li>Documentar proceso de auditoria interna</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <section class="admin-view" data-admin-view="organigrama">
+        <section class="panel card">
+          <div class="view-head">
+            <h2>Organigrama</h2>
+            <p>Estructura general del equipo administrativo y operativo.</p>
+          </div>
+          <div class="org-grid">
+            <button class="card org-node org-role" type="button" data-org-role="direccion_general">
+              <span class="org-role-title">Direccion General</span>
+              <span class="org-role-count">1 responsable</span>
+            </button>
+            <button class="card org-node org-role" type="button" data-org-role="gerencia_operaciones">
+              <span class="org-role-title">Gerencia de Operaciones</span>
+              <span class="org-role-count">3 coordinadores</span>
+            </button>
+            <button class="card org-node org-role" type="button" data-org-role="gerencia_comercial">
+              <span class="org-role-title">Gerencia Comercial</span>
+              <span class="org-role-count">4 ejecutivos</span>
+            </button>
+            <button class="card org-node org-role" type="button" data-org-role="atencion_cliente">
+              <span class="org-role-title">Atencion al Cliente</span>
+              <span class="org-role-count">8 asesores</span>
+            </button>
+            <button class="card org-node org-role" type="button" data-org-role="logistica_flota">
+              <span class="org-role-title">Logistica y Flota</span>
+              <span class="org-role-count">10 operadores</span>
+            </button>
+          </div>
+
+          <section id="orgEmployeePanel" class="card org-detail" aria-live="polite">
+            <p id="orgDetailHint" class="org-detail-hint">
+              Selecciona un rol del organigrama para ver todas las fichas del equipo.
+            </p>
+
+            <div id="orgDetailBody" class="org-detail-body" hidden>
+              <section class="org-employee-picker" aria-label="Colaboradores del area">
+                <p id="orgEmployeesMeta" class="org-employee-meta">-</p>
+                <div id="orgEmployeesList" class="org-employees-list"></div>
+              </section>
+
+              <article class="org-passport-card" aria-label="Ficha de colaborador">
+                <header class="org-passport-head">
+                  <div class="org-passport-photo">
+                    <span id="orgEmployeeInitials">-</span>
+                  </div>
+                  <div class="org-passport-head-main">
+                    <p class="org-passport-label">Credencial interna</p>
+                    <h3 id="orgEmployeeRole">-</h3>
+                    <p id="orgEmployeeArea">-</p>
+                    <div class="org-passport-badges">
+                      <span id="orgEmployeeStatus" class="org-passport-badge">-</span>
+                      <span id="orgEmployeeNationality" class="org-passport-badge">-</span>
+                    </div>
+                  </div>
+                  <div class="org-passport-folio">
+                    <p>Folio</p>
+                    <strong id="orgEmployeeId">-</strong>
+                    <small id="orgEmployeeIssueDate">-</small>
+                  </div>
+                </header>
+
+                <div class="org-detail-grid">
+                  <article class="org-detail-item">
+                    <p>Empleado</p>
+                    <strong id="orgEmployeeName">-</strong>
+                  </article>
+                  <article class="org-detail-item">
+                    <p>Correo corporativo</p>
+                    <strong id="orgEmployeeEmail">-</strong>
+                  </article>
+                  <article class="org-detail-item">
+                    <p>Telefono</p>
+                    <strong id="orgEmployeePhone">-</strong>
+                  </article>
+                  <article class="org-detail-item">
+                    <p>Sucursal base</p>
+                    <strong id="orgEmployeeBranch">-</strong>
+                  </article>
+                  <article class="org-detail-item">
+                    <p>Turno</p>
+                    <strong id="orgEmployeeShift">-</strong>
+                  </article>
+                  <article class="org-detail-item">
+                    <p>Antiguedad</p>
+                    <strong id="orgEmployeeSeniority">-</strong>
+                  </article>
+                  <article class="org-detail-item">
+                    <p>Ingreso</p>
+                    <strong id="orgEmployeeHireDate">-</strong>
+                  </article>
+                  <article class="org-detail-item">
+                    <p>Nacimiento</p>
+                    <strong id="orgEmployeeBirthDate">-</strong>
+                  </article>
+                  <article class="org-detail-item">
+                    <p>Grupo sanguineo</p>
+                    <strong id="orgEmployeeBloodType">-</strong>
+                  </article>
+                  <article class="org-detail-item">
+                    <p>Contacto emergencia</p>
+                    <strong id="orgEmployeeEmergencyContact">-</strong>
+                  </article>
+                  <article class="org-detail-item">
+                    <p>Certificaciones</p>
+                    <strong id="orgEmployeeCertifications">-</strong>
+                  </article>
+                  <article class="org-detail-item">
+                    <p>Observaciones</p>
+                    <strong id="orgEmployeeNotes">-</strong>
+                  </article>
+                </div>
+              </article>
+            </div>
+          </section>
+        </section>
+      </section>
+
+      <section class="admin-view" data-admin-view="proveedores">
+        <section class="panel card">
+          <div class="view-head">
+            <h2>Proveedores</h2>
+            <p>Control de contratos, servicio y cumplimiento de SLA.</p>
+          </div>
+          <div class="table-wrap mini-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Proveedor</th>
+                  <th>Servicio</th>
+                  <th>Contacto</th>
+                  <th>Estatus</th>
+                  <th>Vigencia</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Llantas del Norte</td>
+                  <td>Mantenimiento preventivo</td>
+                  <td>81 2211 4500</td>
+                  <td>Activo</td>
+                  <td>2026-12-31</td>
+                </tr>
+                <tr>
+                  <td>Seguros Cima</td>
+                  <td>Polizas de flota</td>
+                  <td>81 9900 8800</td>
+                  <td>Renovacion</td>
+                  <td>2026-06-30</td>
+                </tr>
+                <tr>
+                  <td>Telemetria MX</td>
+                  <td>GPS y monitoreo</td>
+                  <td>55 3344 1122</td>
+                  <td>Activo</td>
+                  <td>2027-01-15</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
     </section>
   </main>
 
