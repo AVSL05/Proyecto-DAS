@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/styles.css?v=7">
+    <link rel="stylesheet" href="/static/styles.css?v=8">
 </head>
 <body>
     <!-- Header -->
@@ -17,7 +17,50 @@
                 <h1>🚌 Cuidado con el pug</h1>
             </div>
             <div class="header-right">
-                <a class="btn btn-login" href="/login">Iniciar sesión</a>
+                <!-- Botón de login (se oculta cuando hay sesión) -->
+                <a class="btn btn-login" href="/login" id="loginBtn">Iniciar sesión</a>
+                
+                <!-- Menú de usuario (se muestra cuando hay sesión) -->
+                <div id="userMenuContainer">
+                    <button class="user-menu-btn" id="userMenuBtn">
+                        <span class="user-icon">👤</span>
+                        <span id="userName">Usuario</span>
+                        <span>▼</span>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-dropdown-header">
+                            <div style="font-weight: 800; font-size: 1.1em;" id="userDropdownName">Usuario</div>
+                            <div class="user-dropdown-email" id="userDropdownEmail">usuario@email.com</div>
+                        </div>
+                        <ul class="user-dropdown-menu">
+                            <li class="user-dropdown-item">
+                                <a href="#" class="user-dropdown-link" id="profileLink">
+                                    <span class="user-dropdown-icon">👤</span>
+                                    <span>Mi Perfil</span>
+                                </a>
+                            </li>
+                            <li class="user-dropdown-item">
+                                <a href="#" class="user-dropdown-link" id="reservationsLink">
+                                    <span class="user-dropdown-icon">📋</span>
+                                    <span>Mis Reservas</span>
+                                </a>
+                            </li>
+                            <li class="user-dropdown-item">
+                                <a href="#" class="user-dropdown-link" id="paymentMethodsLink">
+                                    <span class="user-dropdown-icon">💳</span>
+                                    <span>Métodos de Pago</span>
+                                </a>
+                            </li>
+                            <li class="user-dropdown-divider"></li>
+                            <li class="user-dropdown-item">
+                                <a href="#" class="user-dropdown-link logout" id="logoutBtn">
+                                    <span class="user-dropdown-icon">🚪</span>
+                                    <span>Cerrar Sesión</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -147,6 +190,7 @@
         </div>
     </footer>
 
+    <script src="/static/user-menu.js?v=1"></script>
     <script src="/static/app.js?v=7"></script>
     <script src="/static/select-vehicle-override.js?v=1"></script>
 </body>

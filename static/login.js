@@ -28,17 +28,23 @@ async function resolveRoleFromToken(token) {
   });
 
   if (!response.ok) {
-    return ACCESS_CLIENT;
+    return { role: ACCESS_CLIENT, user: null };
   }
 
   const body = await response.json();
-  return body.role || ACCESS_CLIENT;
+  return { role: body.role || ACCESS_CLIENT, user: body };
 }
 
-function persistSession(token, tokenType, role) {
+function persistSession(token, tokenType, role, user) {
   localStorage.setItem("access_token", token);
   localStorage.setItem("token_type", tokenType || "bearer");
   localStorage.setItem("user_role", role || ACCESS_CLIENT);
+  
+  // Guardar información del usuario si está disponible
+  if (user) {
+    localStorage.setItem("user_email", user.email || "");
+    localStorage.setItem("user_name", user.full_name || user.email || "Usuario");
+  }
 }
 
 roleButtons.forEach((button) => {
@@ -58,12 +64,12 @@ if (oauthToken && provider === "google") {
   msg.textContent = "Validando inicio de sesion con Google...";
 
   resolveRoleFromToken(oauthToken)
-    .then((role) => {
-      persistSession(oauthToken, "bearer", role);
+    .then((data) => {
+      persistSession(oauthToken, "bearer", data.role, data.user);
       msg.classList.add("ok");
       msg.textContent = "Login exitoso. Redirigiendo...";
       window.history.replaceState({}, document.title, "/login");
-      setTimeout(() => redirectByRole(role), 700);
+      setTimeout(() => redirectByRole(data.role), 700);
     })
     .catch(() => {
       msg.classList.add("err");
@@ -119,7 +125,7 @@ form.addEventListener("submit", async (event) => {
     }
 
     const userRole = body?.user?.role || ACCESS_CLIENT;
-    persistSession(body.token, body.token_type, userRole);
+    persistSession(body.token, body.token_type, userRole, body.user);
 
     msg.classList.add("ok");
     msg.textContent = "Login correcto. Redirigiendo...";

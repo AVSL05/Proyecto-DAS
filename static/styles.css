@@ -509,6 +509,26 @@ footer p {
     .review-text {
         font-size: 1.1em;
     }
+
+    /* Adaptaciones para el menú de usuario en móvil */
+    .user-menu-btn {
+        padding: 6px 12px;
+        font-size: 0.9em;
+    }
+
+    .user-menu-btn span:last-child {
+        display: none; /* Ocultar la flecha en móvil */
+    }
+
+    .user-dropdown {
+        right: -10px;
+        min-width: 220px;
+    }
+
+    .btn-login {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
 }
 
 /* =========================
@@ -536,6 +556,152 @@ footer p {
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+/* =========================
+   Menú de Usuario
+   ========================= */
+
+#userMenuContainer {
+    display: none; /* Oculto por defecto, se muestra cuando hay sesión */
+    align-items: center;
+    gap: 10px;
+}
+
+.user-menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: white;
+    border: 2px solid white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Abhaya Libre', serif;
+    font-weight: 800;
+    letter-spacing: 0.5%;
+    color: #3575F6;
+}
+
+.user-menu-btn:hover {
+    background: transparent;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+.user-icon {
+    width: 24px;
+    height: 24px;
+    background: #3575F6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.user-menu-btn:hover .user-icon {
+    background: white;
+    color: #3575F6;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    min-width: 250px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.user-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-dropdown-header {
+    padding: 20px;
+    background: linear-gradient(135deg, #3575F6 0%, #6366EB 100%);
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-dropdown-email {
+    font-size: 0.9em;
+    opacity: 0.9;
+    margin-top: 5px;
+    font-weight: 600;
+}
+
+.user-dropdown-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-dropdown-item {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.user-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.user-dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: background 0.2s;
+    cursor: pointer;
+    font-family: 'Abhaya Libre', serif;
+    font-weight: 800;
+    letter-spacing: 0.5%;
+}
+
+.user-dropdown-link:hover {
+    background: #f8f9fa;
+    color: #3575F6;
+}
+
+.user-dropdown-icon {
+    font-size: 1.2em;
+    width: 20px;
+    text-align: center;
+}
+
+.user-dropdown-divider {
+    height: 1px;
+    background: #e0e0e0;
+    margin: 5px 0;
+}
+
+.user-dropdown-link.logout {
+    color: #dc3545;
+}
+
+.user-dropdown-link.logout:hover {
+    background: #fff5f5;
+    color: #c82333;
+}
+
+.header-right {
+    position: relative;
 }
 
 /* =========================
