@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Reservas | Cuidado con el pug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css?v=8">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="header-left">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h1>🚌 Cuidado con el pug</h1>
+                </a>
+            </div>
+            <div class="header-right">
+                <a class="btn btn-login" href="/login" id="loginBtn">Iniciar sesión</a>
+                <div id="userMenuContainer">
+                    <button class="user-menu-btn" id="userMenuBtn">
+                        <span class="user-icon">👤</span>
+                        <span id="userName">Usuario</span>
+                        <span>▼</span>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-dropdown-header">
+                            <div style="font-weight: 800; font-size: 1.1em;" id="userDropdownName">Usuario</div>
+                            <div class="user-dropdown-email" id="userDropdownEmail">usuario@email.com</div>
+                        </div>
+                        <ul class="user-dropdown-menu">
+                            <li class="user-dropdown-item">
+                                <a href="/perfil" class="user-dropdown-link">
+                                    <span class="user-dropdown-icon">👤</span>
+                                    <span>Mi Perfil</span>
+                                </a>
+                            </li>
+                            <li class="user-dropdown-item">
+                                <a href="/mis-reservas" class="user-dropdown-link">
+                                    <span class="user-dropdown-icon">📋</span>
+                                    <span>Mis Reservas</span>
+                                </a>
+                            </li>
+                            <li class="user-dropdown-item">
+                                <a href="/metodos-pago" class="user-dropdown-link">
+                                    <span class="user-dropdown-icon">💳</span>
+                                    <span>Métodos de Pago</span>
+                                </a>
+                            </li>
+                            <li class="user-dropdown-divider"></li>
+                            <li class="user-dropdown-item">
+                                <a href="#" class="user-dropdown-link logout" id="logoutBtn">
+                                    <span class="user-dropdown-icon">🚪</span>
+                                    <span>Cerrar Sesión</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" style="margin-top: 30px; margin-bottom: 20px;">
+        <h2 style="margin: 0; color: #3575F6;">Mis Reservas</h2>
+        <p style="color: #666; margin-top: 8px;">Administra tus reservas</p>
+    </div>
+
+    <main class="container">
+        <section class="card" style="text-align: center; padding: 60px 30px;">
+            <h3 style="color: #666; font-size: 2em;">🚧</h3>
+            <h3 style="color: #3575F6;">Página en Construcción</h3>
+            <p style="color: #666; margin-top: 15px;">
+                Esta funcionalidad estará disponible próximamente. Aquí podrás:
+            </p>
+            <ul style="max-width: 400px; margin: 20px auto; text-align: left; color: #666;">
+                <li>Ver el historial de tus reservas</li>
+                <li>Cancelar reservas activas</li>
+                <li>Solicitar reembolsos</li>
+                <li>Ver detalles de cada reserva</li>
+            </ul>
+            <a href="/" class="btn btn-primary" style="margin-top: 20px; display: inline-block;">
+                Volver al Inicio
+            </a>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p><strong>Cuidado con el pug</strong></p>
+            <div class="footer-links">
+                <a href="#">Términos y condiciones</a>
+                <a href="#">Información legal</a>
+                <a href="#">Aviso de privacidad</a>
+            </div>
+            <p class="footer-copyright">Cuidado con el pug N.L. Calle linsana #69, cp 42067, San Nicolas de los Garza, Mexico</p>
+            <p class="footer-copyright">Copyright 2026 Cuidado con el pug | Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <script src="/static/user-menu.js?v=1"></script>
+</body>
+</html>

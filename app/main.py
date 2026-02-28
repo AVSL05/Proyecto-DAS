@@ -94,3 +94,15 @@ def admin_dashboard_page(request: Request):
 @app.get("/payment", include_in_schema=False)
 def payment_page():
     return FileResponse(str(STATIC_DIR / "payment.html"))
+
+@app.get("/perfil", include_in_schema=False)
+def perfil_page():
+    return FileResponse(str(STATIC_DIR / "perfil.html"))
+
+@app.get("/mis-reservas", include_in_schema=False)
+def mis_reservas_page():
+    return FileResponse(str(STATIC_DIR / "mis-reservas.html"))
+
+@app.get("/metodos-pago", include_in_schema=False)
+def metodos_pago_page():
+    return FileResponse(str(STATIC_DIR / "metodos-pago.html"))

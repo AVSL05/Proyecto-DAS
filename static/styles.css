@@ -705,6 +705,25 @@ footer p {
 }
 
 /* =========================
+   Página de Perfil
+   ========================= */
+
+.profile-layout {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.profile-layout .card {
+    margin-bottom: 30px;
+}
+
+.profile-layout input[disabled] {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    color: #999;
+}
+
+/* =========================
    AUTOCOMPLETE
    ========================= */
 

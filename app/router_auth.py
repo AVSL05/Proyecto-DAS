@@ -10,12 +10,14 @@ from app.db_models import PasswordResetToken, User, UserRole
 from .db import get_db
 from .oauth_config import oauth
 from .schemas import (
+    ChangePasswordRequest,
     ForgotPasswordRequest,
     LoginRequest,
     RegisterRequest,
     RegisterResponse,
     ResetPasswordRequest,
     TokenResponse,
+    UpdateProfileRequest,
     UserOut,
 )
 from .security import (
@@ -160,6 +162,69 @@ def me(request: Request, db: Session = Depends(get_db)):
         phone=user.phone,
         role=normalize_role(user.role),
     )
+
+
+@router.patch("/me", response_model=UserOut)
+def update_profile(
+    payload: UpdateProfileRequest,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    user = get_current_user(request, db)
+    
+    if payload.full_name is not None:
+        full_name = payload.full_name.strip()
+        if len(full_name) < 3 or len(full_name) > 120:
+            raise HTTPException(status_code=400, detail="El nombre debe tener entre 3 y 120 caracteres.")
+        user.full_name = full_name
+    
+    if payload.phone is not None:
+        phone = normalize_phone(payload.phone)
+        user.phone = phone
+    
+    db.commit()
+    db.refresh(user)
+    
+    return UserOut(
+        id=user.id,
+        full_name=user.full_name,
+        email=user.email,
+        phone=user.phone,
+        role=normalize_role(user.role),
+    )
+
+
+@router.post("/change-password")
+def change_password(
+    payload: ChangePasswordRequest,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    user = get_current_user(request, db)
+    
+    # Verificar que el usuario tenga contraseña (no usuarios de Google)
+    if not user.password_hash:
+        raise HTTPException(
+            status_code=400,
+            detail="Esta cuenta usa inicio de sesión con Google y no tiene contraseña."
+        )
+    
+    # Verificar contraseña actual
+    if not verify_password(payload.current_password, user.password_hash):
+        raise HTTPException(status_code=400, detail="La contraseña actual es incorrecta.")
+    
+    # Verificar que las nuevas contraseñas coincidan
+    if payload.new_password != payload.confirm_password:
+        raise HTTPException(status_code=400, detail="Las contraseñas nuevas no coinciden.")
+    
+    # Validar fortaleza de la nueva contraseña
+    validate_password_strength(payload.new_password)
+    
+    # Actualizar contraseña
+    user.password_hash = hash_password(payload.new_password)
+    db.commit()
+    
+    return {"message": "Contraseña actualizada correctamente."}
 
 
 @router.post("/forgot-password")
