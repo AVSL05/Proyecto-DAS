@@ -11,6 +11,8 @@ body {
     background: #FFFFFF;
     min-height: 100vh;
     color: #333;
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
@@ -333,7 +335,7 @@ footer {
     color: white;
     padding: 30px 0;
     text-align: center;
-    margin-top: 0;
+    margin-top: auto;
 }
 
 footer p {
@@ -1586,5 +1588,132 @@ footer p {
 
     .card-info {
         width: 100%;
+    }
+}
+
+/* Modal de Footer */
+.footer-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.footer-modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: slideDown 0.3s;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.footer-modal-header {
+    padding: 20px 30px;
+    background: #3575F6;
+    color: white;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-modal-header h2 {
+    margin: 0;
+    color: white;
+    font-size: 1.5em;
+}
+
+.footer-modal-close {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.footer-modal-close:hover,
+.footer-modal-close:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.footer-modal-body {
+    padding: 30px;
+    max-height: calc(80vh - 140px);
+    overflow-y: auto;
+}
+
+.footer-modal-body p {
+    line-height: 1.6;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.footer-modal-body h3 {
+    color: #3575F6;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.footer-modal-body ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.footer-modal-body li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .footer-modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+    
+    .footer-modal-header {
+        padding: 15px 20px;
+    }
+    
+    .footer-modal-body {
+        padding: 20px;
+    }
+    
+    .footer-modal-header h2 {
+        font-size: 1.2em;
     }
 }

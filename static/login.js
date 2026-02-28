@@ -3,18 +3,9 @@ const msg = document.getElementById("msg");
 const goRegister = document.getElementById("goRegister");
 const goForgot = document.getElementById("goForgot");
 const googleLogin = document.getElementById("googleLogin");
-const roleInput = document.getElementById("roleInput");
-const roleButtons = document.querySelectorAll("[data-role-option]");
 
 const ACCESS_CLIENT = "cliente";
 const ACCESS_ADMIN = "administrativo";
-
-function setRole(role) {
-  roleInput.value = role;
-  roleButtons.forEach((button) => {
-    button.classList.toggle("active", button.dataset.roleOption === role);
-  });
-}
 
 function redirectByRole(role) {
   window.location.href = role === ACCESS_ADMIN ? "/admin" : "/";
@@ -47,14 +38,6 @@ function persistSession(token, tokenType, role, user) {
   }
 }
 
-roleButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    setRole(button.dataset.roleOption);
-  });
-});
-
-setRole(roleInput.value || ACCESS_CLIENT);
-
 const urlParams = new URLSearchParams(window.location.search);
 const oauthToken = urlParams.get("token");
 const provider = urlParams.get("provider");
@@ -78,11 +61,6 @@ if (oauthToken && provider === "google") {
 }
 
 googleLogin.addEventListener("click", () => {
-  if (roleInput.value === ACCESS_ADMIN) {
-    msg.className = "msg err";
-    msg.textContent = "El acceso administrativo no usa inicio con Google.";
-    return;
-  }
   window.location.href = "/api/auth/google/login";
 });
 

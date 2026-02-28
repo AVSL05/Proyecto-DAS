@@ -130,11 +130,6 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Credenciales invalidas.")
 
     user_role = normalize_role(user.role)
-    if payload.role != user_role:
-        raise HTTPException(
-            status_code=403,
-            detail=f"Tu cuenta no tiene acceso de tipo '{payload.role}'.",
-        )
 
     tok = create_access_token(subject=user.email, extra_claims={"uid": user.id, "role": user_role})
 

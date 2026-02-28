@@ -158,15 +158,28 @@
         <div class="container">
             <p><strong>Cuidado con el pug</strong></p>
             <div class="footer-links">
-                <a href="#" onclick="alert('Sección en desarrollo')">Términos y condiciones</a>
-                <a href="#" onclick="alert('Sección en desarrollo')">Información legal</a>
-                <a href="#" onclick="alert('Sección en desarrollo')">Aviso de privacidad</a>
+                <a href="#" onclick="openFooterModal('terminos'); return false;">Términos y condiciones</a>
+                <a href="#" onclick="openFooterModal('legal'); return false;">Información legal</a>
+                <a href="#" onclick="openFooterModal('privacidad'); return false;">Aviso de privacidad</a>
             </div>
             <p class="footer-copyright">Cuidado con el pug N.L. Calle linsana #69, cp 42067, San Nicolas de los Garza, Mexico</p>
             <p class="footer-copyright">Copyright 2026 Cuidado con el pug | Todos los derechos reservados</p>
         </div>
     </footer>
 
+    <!-- Modal de Footer -->
+    <div id="footerModal" class="footer-modal">
+        <div class="footer-modal-content">
+            <div class="footer-modal-header">
+                <h2 id="footerModalTitle"></h2>
+                <button class="footer-modal-close">&times;</button>
+            </div>
+            <div class="footer-modal-body" id="footerModalBody">
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/footer-modals.js?v=1"></script>
     <script src="/static/user-menu.js?v=1"></script>
     <script src="/static/perfil.js?v=1"></script>
 </body>
