@@ -45,6 +45,13 @@ header {
     letter-spacing: 0.5%;
 }
 
+.header-logo {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1); /* Hace el logo blanco */
+}
+
 .header-right {
     display: flex;
     align-items: center;
@@ -1419,5 +1426,165 @@ footer p {
 @media (max-width: 480px) {
     .stats-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* ========== Métodos de Pago Styles ========== */
+
+/* Payment Method Cards */
+.payment-method-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid transparent;
+}
+
+.payment-method-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.payment-method-card.default {
+    border-color: #3575F6;
+    background: linear-gradient(to right, #f8f9ff, #ffffff);
+}
+
+.payment-method-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.card-info {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.card-icon {
+    font-size: 2em;
+}
+
+.card-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.card-number {
+    font-size: 1.1em;
+    color: #333;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.card-holder {
+    font-size: 0.9em;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.default-badge {
+    background: #3575F6;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 800;
+}
+
+.payment-method-body {
+    margin-bottom: 15px;
+}
+
+.expiry-info {
+    color: #666;
+    font-size: 0.95em;
+}
+
+.payment-method-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: 800;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-family: 'Abhaya Libre', serif;
+    font-weight: 800;
+    letter-spacing: 0.5%;
+    font-size: 1em;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #3575F6;
+}
+
+.form-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.form-actions {
+    margin-top: 20px;
+}
+
+/* Button Secondary */
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+/* Responsive Payment Methods */
+@media (max-width: 768px) {
+    .payment-method-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .payment-method-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .payment-method-actions .btn {
+        width: 100%;
+    }
+
+    .card-info {
+        width: 100%;
     }
 }

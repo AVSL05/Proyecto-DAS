@@ -30,6 +30,7 @@ class User(Base):
     # Relaciones
     reservations = relationship("Reservation", back_populates="user")
     payments = relationship("Payment", back_populates="user")
+    saved_payment_methods = relationship("SavedPaymentMethod", back_populates="user", cascade="all, delete-orphan")
 
 class PasswordResetToken(Base):
     __tablename__ = "password_reset_tokens"
@@ -201,3 +202,29 @@ class SupportTicket(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
 
     reservation = relationship("Reservation", back_populates="support_tickets")
+
+
+class SavedPaymentMethod(Base):
+    """Métodos de pago guardados por el usuario"""
+    __tablename__ = "saved_payment_methods"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    
+    # Información de la tarjeta (encriptada en producción)
+    card_type = Column(String(20), nullable=False)  # visa, mastercard, amex
+    card_holder = Column(String(120), nullable=False)  # Nombre del titular
+    card_last4 = Column(String(4), nullable=False)  # Últimos 4 dígitos
+    expiry_month = Column(String(2), nullable=False)  # MM
+    expiry_year = Column(String(4), nullable=False)  # YYYY
+    
+    # Estado
+    is_default = Column(Boolean, default=False, nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+    
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    
+    # Relación
+    user = relationship("User", back_populates="saved_payment_methods")

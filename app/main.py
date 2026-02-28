@@ -8,6 +8,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.routes import admin, newsletter, promotions, reservations, reviews, search, support, vehicles
+from app.routes.payment_methods import router as payment_methods_router
 from app.router_auth import router as auth_router
 from app.db import Base, engine, ensure_user_role_column
 
@@ -55,6 +56,7 @@ app.include_router(newsletter.router, prefix="/api/newsletter", tags=["Newslette
 app.include_router(support.router)
 app.include_router(vehicles.router)  # Ya tiene el prefix en el router
 app.include_router(reservations.router)  # Ya tiene el prefix en el router
+app.include_router(payment_methods_router)  # Ya tiene el prefix en el router
 app.include_router(admin.router)
 
 # --- Auth router ---

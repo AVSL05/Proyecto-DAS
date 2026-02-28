@@ -7,15 +7,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/styles.css?v=8">
+    <link rel="stylesheet" href="/static/styles.css?v=10">
 </head>
 <body>
     <!-- Header -->
     <header>
         <div class="header-container">
             <div class="header-left">
-                <a href="/" style="text-decoration: none; color: inherit;">
-                    <h1>🚌 Cuidado con el pug</h1>
+                <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 15px;">
+                    <img src="/static/images/logo.png" alt="Cuidado con el pug" class="header-logo">
+                    <h1>Cuidado con el pug</h1>
                 </a>
             </div>
             <div class="header-right">
@@ -70,22 +71,85 @@
     </div>
 
     <main class="container">
-        <section class="card" style="text-align: center; padding: 60px 30px;">
-            <h3 style="color: #666; font-size: 2em;">🚧</h3>
-            <h3 style="color: #3575F6;">Página en Construcción</h3>
-            <p style="color: #666; margin-top: 15px;">
-                Esta funcionalidad estará disponible próximamente. Aquí podrás:
-            </p>
-            <ul style="max-width: 400px; margin: 20px auto; text-align: left; color: #666;">
-                <li>Guardar métodos de pago</li>
-                <li>Administrar tarjetas guardadas</li>
-                <li>Configurar método de pago predeterminado</li>
-                <li>Eliminar métodos de pago antiguos</li>
-            </ul>
-            <a href="/" class="btn btn-primary" style="margin-top: 20px; display: inline-block;">
-                Volver al Inicio
-            </a>
-        </section>
+        <!-- Botón para agregar tarjeta -->
+        <div style="margin-bottom: 20px; text-align: right;">
+            <button class="btn btn-primary" id="addCardBtn">
+                ➕ Agregar Tarjeta
+            </button>
+        </div>
+
+        <!-- Formulario para agregar tarjeta (oculto por defecto) -->
+        <div id="addCardFormContainer" class="card" style="display: none; margin-bottom: 30px;">
+            <h3 style="color: #3575F6; margin-bottom: 20px;">Agregar Método de Pago</h3>
+            <form id="addCardForm">
+                <div class="form-group">
+                    <label for="cardNumber">Número de Tarjeta</label>
+                    <div style="position: relative;">
+                        <input 
+                            type="text" 
+                            id="cardNumber" 
+                            maxlength="19" 
+                            placeholder="1234 5678 9012 3456" 
+                            required
+                            style="padding-right: 120px;"
+                        >
+                        <span id="cardTypeIndicator" style="
+                            position: absolute;
+                            right: 15px;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            display: none;
+                            color: #666;
+                            font-size: 0.9em;
+                        "></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cardHolder">Nombre del Titular</label>
+                    <input 
+                        type="text" 
+                        id="cardHolder" 
+                        placeholder="Como aparece en la tarjeta" 
+                        required
+                        style="text-transform: uppercase;"
+                    >
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="expiryDate">Fecha de Expiración</label>
+                        <input 
+                            type="text" 
+                            id="expiryDate" 
+                            maxlength="5" 
+                            placeholder="MM/YY" 
+                            required
+                        >
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: flex-end;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 0;">
+                            <input type="checkbox" id="isDefault">
+                            <span>Método predeterminado</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" id="cancelAddCard">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Guardar Tarjeta
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Lista de métodos de pago -->
+        <div id="paymentMethodsList">
+            <div class="loading">Cargando métodos de pago...</div>
+        </div>
     </main>
 
     <footer>
@@ -102,5 +166,6 @@
     </footer>
 
     <script src="/static/user-menu.js?v=1"></script>
+    <script src="/static/metodos-pago.js?v=1"></script>
 </body>
 </html>
