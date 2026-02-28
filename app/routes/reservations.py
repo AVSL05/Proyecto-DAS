@@ -292,10 +292,18 @@ def list_my_reservations(
     total = query.count()
     reservations = query.order_by(Reservation.created_at.desc()).offset(skip).limit(limit).all()
     
-    # Agregar información del vehículo y usuario
+    # Agregar información del vehículo, usuario e invoice
     for reservation in reservations:
         reservation.vehicle = db.query(Vehicle).filter(Vehicle.id == reservation.vehicle_id).first()
         reservation.user_name = current_user.full_name
+        
+        # Agregar información de la factura si existe
+        invoice = db.query(Invoice).filter(Invoice.reservation_id == reservation.id).first()
+        if invoice:
+            reservation.invoice_folio = invoice.folio
+            reservation.invoice_number = invoice.invoice_number
+            reservation.invoice_status = invoice.status
+            reservation.invoice_issued_at = invoice.issued_at
     
     return ReservationListOut(reservations=reservations, total=total)
 

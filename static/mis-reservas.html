@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/styles.css?v=8">
+    <link rel="stylesheet" href="/static/styles.css?v=9">
 </head>
 <body>
     <!-- Header -->
@@ -66,26 +66,44 @@
 
     <div class="container" style="margin-top: 30px; margin-bottom: 20px;">
         <h2 style="margin: 0; color: #3575F6;">Mis Reservas</h2>
-        <p style="color: #666; margin-top: 8px;">Administra tus reservas</p>
+        <p style="color: #666; margin-top: 8px;">Administra tus reservaciones de vehículos</p>
     </div>
 
     <main class="container">
-        <section class="card" style="text-align: center; padding: 60px 30px;">
-            <h3 style="color: #666; font-size: 2em;">🚧</h3>
-            <h3 style="color: #3575F6;">Página en Construcción</h3>
-            <p style="color: #666; margin-top: 15px;">
-                Esta funcionalidad estará disponible próximamente. Aquí podrás:
-            </p>
-            <ul style="max-width: 400px; margin: 20px auto; text-align: left; color: #666;">
-                <li>Ver el historial de tus reservas</li>
-                <li>Cancelar reservas activas</li>
-                <li>Solicitar reembolsos</li>
-                <li>Ver detalles de cada reserva</li>
-            </ul>
-            <a href="/" class="btn btn-primary" style="margin-top: 20px; display: inline-block;">
-                Volver al Inicio
-            </a>
-        </section>
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalReservations">0</div>
+                <div class="stat-label">Total de Reservas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activeReservations">0</div>
+                <div class="stat-label">Activas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completedReservations">0</div>
+                <div class="stat-label">Completadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalSpent">$0.00</div>
+                <div class="stat-label">Total Gastado</div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters-bar">
+            <button class="filter-btn active" data-filter="all">Todas</button>
+            <button class="filter-btn" data-filter="pending">Pendientes</button>
+            <button class="filter-btn" data-filter="confirmed">Confirmadas</button>
+            <button class="filter-btn" data-filter="in_progress">En Progreso</button>
+            <button class="filter-btn" data-filter="completed">Completadas</button>
+            <button class="filter-btn" data-filter="cancelled">Canceladas</button>
+        </div>
+
+        <!-- Lista de reservaciones -->
+        <div id="reservationsList">
+            <div class="loading">Cargando reservaciones...</div>
+        </div>
     </main>
 
     <footer>
@@ -102,5 +120,6 @@
     </footer>
 
     <script src="/static/user-menu.js?v=1"></script>
+    <script src="/static/mis-reservas.js?v=1"></script>
 </body>
 </html>
