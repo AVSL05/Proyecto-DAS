@@ -48,11 +48,28 @@ pip install -r requirements.txt
 
 ## Ejecutar el servidor
 
+Este proyecto puede ejecutarse en dos modos:
+
+- **SQLite (modo antiguo)**: usa `app/main.py` y la base local `dev.db`.
+- **MongoDB (recomendado y actual)**: usa `app/main_mongo.py` y la base
+  configurada por `MONGODB_URL`/`MONGODB_DATABASE`.
+
+Para asegurarte siempre de estar trabajando con MongoDB (y que los datos
+aparezcan en tu vista de Mongo), arranca el servidor de esta forma:
+
 ```bash
-python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+# activa el virtualenv primero
+source venv/bin/activate
+
+# luego
+python -m uvicorn app.main_mongo:app --reload --host 127.0.0.1 --port 8000
 ```
 
-El servidor estará disponible en: `http://localhost:8000`
+El servidor estará disponible en: `http://localhost:8000` (misma URL que
+antes, pero ahora utiliza MongoDB para persistir usuarios, reservas, etc.)
+
+Se recomienda fijar las variables de entorno `MONGODB_URL` y
+`MONGODB_DATABASE` en un `.env` o en tu shell antes de ejecutar el comando.
 
 ## Documentación de la API
 

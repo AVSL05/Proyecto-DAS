@@ -110,6 +110,7 @@ async def register(payload: RegisterRequest):
         )
 
         await user.insert()
+        print(f"✅ Nuevo usuario registrado en MongoDB: {user.email} (id={user.id})")
 
         return RegisterResponse(
             id=str(user.id),
@@ -121,6 +122,7 @@ async def register(payload: RegisterRequest):
     except HTTPException:
         raise
     except Exception as e:
+        # add more context when an unexpected error occurs
         print(f"❌ Error en registro: {str(e)}")
         import traceback
         traceback.print_exc()

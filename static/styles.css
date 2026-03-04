@@ -21,6 +21,14 @@ body {
     padding: 20px;
 }
 
+/* contenedor que no aplica centrado horizontal; útil para páginas de perfil/reservas/pago */
+.container-full {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 20px;
+}
+
 /* Header */
 header {
     background: #3575F6;
@@ -30,8 +38,12 @@ header {
 }
 
 .header-container {
-    max-width: 1200px;
-    margin: 0 auto;
+    /* dejar el encabezado ocupando todo el ancho de la ventana para que
+       el logo y el título queden pegados a la izquierda; quitamos el
+       max-width/centering que aplicábamos para las páginas "normales" */
+    width: 100%;
+    max-width: none;
+    margin: 0;          /* ya no centramos el contenedor principal */
     padding: 0 20px;
     display: flex;
     justify-content: space-between;
@@ -736,8 +748,26 @@ footer p {
    ========================= */
 
 .profile-layout {
-    max-width: 800px;
-    margin: 0 auto;
+    /* originalmente limitaba la anchura y centraba la sección de perfil. ahora mantenemos flexbox
+       para que los elementos se distribuyan y no se vean excesivamente encapsulados. */
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    /* opcional: eliminar max-width si prefieres que ocupe todo el contenedor */
+    max-width: none;
+    margin: 0;
+}
+
+/* en cualquier página que use container-full queremos que las tarjetas ocupen
+   todo el ancho disponible en lugar de autocalcular su tamaño intrínseco */
+.container-full .card {
+    width: 100%;
+}
+
+/* asegurar que grids y listas principales aprovechen todo el ancho */
+.stats-grid,
+#paymentMethodsList {
+    width: 100%;
 }
 
 .profile-layout .card {

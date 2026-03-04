@@ -8,9 +8,10 @@ from app.mongodb_models import User
 from app.security import verify_password
 
 async def check_admin():
-    # Conectar a MongoDB
-    client = AsyncIOMotorClient("mongodb://localhost:27017")
-    db = client.cuidado_pug
+    # Conectar a MongoDB usando la configuración común
+    from app.mongodb import MONGODB_URL, DATABASE_NAME
+    client = AsyncIOMotorClient(MONGODB_URL)
+    db = client[DATABASE_NAME]
     
     # Inicializar Beanie
     await init_beanie(database=db, document_models=[User])

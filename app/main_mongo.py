@@ -126,3 +126,19 @@ def admin_dashboard_page(request: Request):
 @app.get("/payment", include_in_schema=False)
 def payment_page():
     return FileResponse(str(STATIC_DIR / "payment.html"))
+
+# --- User pages (added after database migration) ---
+@app.get("/perfil", include_in_schema=False)
+def perfil_page():
+    """Serve the profile static page."""
+    return FileResponse(str(STATIC_DIR / "perfil.html"))
+
+@app.get("/mis-reservas", include_in_schema=False)
+def mis_reservas_page():
+    """Serve the reservations static page."""
+    return FileResponse(str(STATIC_DIR / "mis-reservas.html"))
+
+@app.get("/metodos-pago", include_in_schema=False)
+def metodos_pago_page():
+    """Serve the payment methods static page."""
+    return FileResponse(str(STATIC_DIR / "metodos-pago.html"))
