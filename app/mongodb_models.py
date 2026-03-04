@@ -203,3 +203,86 @@ class Promotion(Document):
             "fecha_inicio",
             "fecha_fin"
         ]
+
+
+class PaymentStatus(str, Enum):
+    """Estados de los pagos"""
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+    REFUNDED = "refunded"
+    REIMBURSED = "reimbursed"
+
+
+class Payment(Document):
+    """Modelo de pagos"""
+    reservation_id: Optional[str] = None  # ObjectId como string
+    user_id: Optional[str] = None  # ObjectId como string
+    
+    # Datos del pago
+    amount: float
+    method: str = Field(default="efectivo", max_length=50)
+    status: PaymentStatus = Field(default=PaymentStatus.PENDING)
+    
+    # Información adicional
+    transaction_id: Optional[str] = Field(None, max_length=255)
+    notes: Optional[str] = None
+    
+    # Timestamps
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
+    
+    class Settings:
+        name = "payments"
+        indexes = [
+            "reservation_id",
+            "user_id",
+            "status",
+            "created_at"
+        ]
+
+
+class SupportTicket(Document):
+    """Modelo de tickets de soporte"""
+    user_id: Optional[str] = None  # ObjectId como string
+    reservation_id: Optional[str] = None  # ObjectId como string
+    
+    # Contenido del ticket
+    subject: str = Field(..., max_length=200)
+    message: str
+    category: str = Field(default="general", max_length=50)
+    priority: str = Field(default="medium", max_length=20)  # low, medium, high
+    status: str = Field(default="abierto", max_length=50)  # abierto, cerrado
+    
+    # Respuesta admin
+    admin_response: Optional[str] = None
+    admin_user_id: Optional[str] = None
+    
+    # Timestamps
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
+    resolved_at: Optional[datetime] = None
+    
+    class Settings:
+        name = "support_tickets"
+        indexes = [
+            "user_id",
+            "reservation_id",
+            "status",
+            "priority",
+            "created_at"
+        ]
+
+
+class Newsletter(Document):
+    """Alias para NewsletterSubscriber"""
+    email: Indexed(EmailStr, unique=True)
+    subscribed_at: datetime = Field(default_factory=datetime.utcnow)
+    active: bool = Field(default=True)
+    
+    class Settings:
+        name = "newsletter_subscribers"
+        indexes = [
+            "email",
+            "active"
+        ]

@@ -4,23 +4,31 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Panel administrativo | Cuidado con el pug</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/admin.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand-wrap">
-      <button id="sidebarToggle" class="btn ghost sidebar-toggle" type="button" aria-controls="adminSidebar" aria-expanded="true">
-        Menu
-      </button>
-      <div class="brand">
-        <p class="eyebrow">Cuidado con el pug</p>
-        <h1>Panel administrativo</h1>
+  <header class="admin-header">
+    <div class="admin-header-container">
+      <div class="admin-header-left">
+        <button id="sidebarToggle" class="sidebar-toggle-btn" type="button" aria-controls="adminSidebar" aria-expanded="true">
+          ☰
+        </button>
+        <a href="#" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 15px;">
+          <img src="/static/images/logo.png" alt="Cuidado con el pug" class="admin-header-logo">
+          <div>
+            <h1 class="admin-header-title">Cuidado con el pug</h1>
+            <p class="admin-header-subtitle">Panel Administrativo</p>
+          </div>
+        </a>
       </div>
-    </div>
-    <div class="actions">
-      <p id="adminName" class="admin-name"></p>
-      <button id="goClient" class="btn ghost" type="button">Vista cliente</button>
-      <button id="logoutBtn" class="btn danger" type="button">Cerrar sesion</button>
+      <div class="admin-header-right">
+        <p id="adminName" class="admin-name"></p>
+        <button id="goClient" class="btn btn-secondary-admin" type="button">Vista cliente</button>
+        <button id="logoutBtn" class="btn btn-danger" type="button">Cerrar sesión</button>
+      </div>
     </div>
   </header>
 
@@ -565,7 +573,14 @@
     </section>
   </main>
 
-  <p id="msg" class="message" aria-live="polite"></p>
+  <!-- Footer -->
+  <footer class="admin-footer">
+    <div class="admin-footer-container">
+      <p><strong>Cuidado con el pug</strong> - Panel Administrativo</p>
+      <p class="admin-footer-copyright">Cuidado con el pug N.L. Calle linsana #69, cp 42067, San Nicolas de los Garza, Mexico</p>
+      <p class="admin-footer-copyright">Copyright 2026 Cuidado con el pug | Todos los derechos reservados</p>
+    </div>
+  </footer>
 
   <script src="/static/admin.js"></script>
 </body>

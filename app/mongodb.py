@@ -24,7 +24,8 @@ async def connect_to_mongo():
     # Importar todos los modelos
     from app.mongodb_models import (
         User, PasswordResetToken, Vehicle, Reservation,
-        Review, NewsletterSubscriber, Promotion
+        Review, NewsletterSubscriber, Promotion,
+        Payment, SupportTicket, Newsletter
     )
     
     # Inicializar Beanie con todos los modelos
@@ -37,7 +38,10 @@ async def connect_to_mongo():
             Reservation,
             Review,
             NewsletterSubscriber,
-            Promotion
+            Promotion,
+            Payment,
+            SupportTicket,
+            Newsletter
         ]
     )
     print(f"✅ Conectado a MongoDB: {DATABASE_NAME}")

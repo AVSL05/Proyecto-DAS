@@ -19,6 +19,7 @@ from app.routes import newsletter_mongo as newsletter
 from app.routes import promotions_mongo as promotions
 from app.routes import vehicles_mongo as vehicles
 from app.routes import reservations_mongo as reservations
+from app.routes import admin_mongo as admin
 from app.router_auth_mongo import router as auth_router
 
 # --- Paths (según tu estructura) ---
@@ -85,7 +86,7 @@ app.include_router(reviews.router, prefix="/api/reviews", tags=["Calificaciones"
 app.include_router(newsletter.router, prefix="/api/newsletter", tags=["Newsletter"])
 app.include_router(vehicles.router)  # Ya tiene el prefix en el router
 app.include_router(reservations.router)  # Ya tiene el prefix en el router
-# app.include_router(admin.router)  # TODO: Migrar admin a MongoDB
+app.include_router(admin.router)  # ✅ Router de administración con MongoDB
 
 # --- Auth router ---
 app.include_router(auth_router)

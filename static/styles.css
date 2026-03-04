@@ -709,6 +709,24 @@ footer p {
     color: #c82333;
 }
 
+.user-dropdown-link.admin-panel {
+    background: linear-gradient(135deg, #3575F6, #6366EB);
+    color: white;
+    border-radius: 8px;
+    margin: 5px 10px;
+    font-weight: 800;
+}
+
+.user-dropdown-link.admin-panel:hover {
+    background: linear-gradient(135deg, #2563EB, #5558D9);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(53, 117, 246, 0.3);
+}
+
+.user-dropdown-link.admin-panel .user-dropdown-icon {
+    font-size: 1.3em;
+}
+
 .header-right {
     position: relative;
 }

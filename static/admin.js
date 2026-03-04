@@ -1,3 +1,7 @@
+// Esperar a que el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', function() {
+console.log("DOMContentLoaded disparado - Iniciando admin.js");
+
 const ACCESS_ADMIN = "administrativo";
 const reservationStatuses = ["pending", "confirmed", "in_progress", "completed", "cancelled"];
 const vehicleStatuses = ["available", "reserved", "in_use", "maintenance", "unavailable"];
@@ -748,7 +752,15 @@ function activateAdminView(viewName) {
 }
 
 function initSidebar() {
-  if (!sidebarToggle || !adminSidebar) return;
+  console.log("Iniciando initSidebar");
+  console.log("sidebarToggle:", sidebarToggle);
+  console.log("adminSidebar:", adminSidebar);
+  console.log("sidebarItems encontrados:", sidebarItems.length);
+  
+  if (!sidebarToggle || !adminSidebar) {
+    console.error("sidebarToggle o adminSidebar no encontrados");
+    return;
+  }
 
   const mobileQuery = window.matchMedia("(max-width: 900px)");
 
@@ -787,7 +799,9 @@ function initSidebar() {
   });
 
   sidebarItems.forEach((item) => {
+    console.log("Agregando listener a sidebar item:", item.dataset.sidebarView);
     item.addEventListener("click", () => {
+      console.log("Sidebar item clickeado:", item.dataset.sidebarView);
       const targetView = activateAdminView(item.dataset.sidebarView);
       const targetHash = `#${targetView}`;
       if (window.location.hash !== targetHash) {
@@ -1304,46 +1318,72 @@ crmCasesTable.addEventListener("change", (event) => {
   renderCrmDetail(selectedCase);
 });
 
-refreshReservations.addEventListener("click", async () => {
-  try {
-    await Promise.all([loadReservations(), loadSales(), loadVehicles(), loadCrm(), loadPaymentAlerts()]);
-  } catch (error) {
-    showMessage(error.message, "err");
-  }
-});
+if (refreshReservations) {
+  refreshReservations.addEventListener("click", async () => {
+    try {
+      await Promise.all([loadReservations(), loadSales(), loadVehicles(), loadCrm(), loadPaymentAlerts()]);
+    } catch (error) {
+      showMessage(error.message, "err");
+    }
+  });
+}
 
-refreshVehicles.addEventListener("click", async () => {
-  try {
-    await loadVehicles();
-  } catch (error) {
-    showMessage(error.message, "err");
-  }
-});
+if (refreshVehicles) {
+  refreshVehicles.addEventListener("click", async () => {
+    try {
+      await loadVehicles();
+    } catch (error) {
+      showMessage(error.message, "err");
+    }
+  });
+}
 
-refreshUsers.addEventListener("click", async () => {
-  try {
-    await loadUsers();
-  } catch (error) {
-    showMessage(error.message, "err");
-  }
-});
+if (refreshUsers) {
+  refreshUsers.addEventListener("click", async () => {
+    try {
+      await loadUsers();
+    } catch (error) {
+      showMessage(error.message, "err");
+    }
+  });
+}
 
-goClient.addEventListener("click", () => {
-  window.location.href = "/";
-});
+if (goClient) {
+  console.log("goClient encontrado, agregando event listener");
+  goClient.addEventListener("click", () => {
+    console.log("goClient clickeado");
+    window.location.href = "/";
+  });
+} else {
+  console.error("goClient no encontrado en el DOM");
+}
 
-logoutBtn.addEventListener("click", () => {
-  clearSession();
-  window.location.href = "/login";
-});
+if (logoutBtn) {
+  console.log("logoutBtn encontrado, agregando event listener");
+  logoutBtn.addEventListener("click", () => {
+    console.log("logoutBtn clickeado");
+    clearSession();
+    window.location.href = "/login";
+  });
+} else {
+  console.error("logoutBtn no encontrado en el DOM");
+}
 
 async function bootstrap() {
   try {
+    console.log("🚀 Iniciando bootstrap del panel admin");
     initSidebar();
     initOrgChartDetails();
 
+    console.log("📡 Solicitando información del usuario actual...");
     currentUser = await apiRequest("/api/auth/me");
+    console.log("👤 Usuario recibido:", currentUser);
+    console.log("🔑 Rol del usuario:", currentUser.role);
+    console.log("✅ Rol esperado:", ACCESS_ADMIN);
+    console.log("🔍 ¿Son iguales?", currentUser.role === ACCESS_ADMIN);
+    
     if (currentUser.role !== ACCESS_ADMIN) {
+      console.error("❌ Rol no es admin. Redirigiendo...");
       showMessage("Tu cuenta no es administrativa.", "err");
       setTimeout(() => {
         window.location.href = "/";
@@ -1351,6 +1391,7 @@ async function bootstrap() {
       return;
     }
 
+    console.log("✅ Usuario es admin. Cargando datos...");
     adminName.textContent = `${currentUser.full_name} (${currentUser.email})`;
 
     await Promise.all([
@@ -1368,3 +1409,5 @@ async function bootstrap() {
 }
 
 bootstrap();
+
+}); // Fin del DOMContentLoaded
