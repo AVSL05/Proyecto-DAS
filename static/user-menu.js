@@ -17,10 +17,10 @@ class UserMenu {
     async checkAuthStatus() {
         console.log("🔍 Verificando estado de autenticación...");
         console.log("🎫 Token:", this.token ? "Existe" : "No existe");
-        
+
         const loginBtn = document.getElementById('loginBtn');
         const userMenuContainer = document.getElementById('userMenuContainer');
-        
+
         console.log("🔘 loginBtn:", loginBtn ? "Encontrado" : "NO encontrado");
         console.log("📦 userMenuContainer:", userMenuContainer ? "Encontrado" : "NO encontrado");
 
@@ -48,7 +48,7 @@ class UserMenu {
 
             this.userInfo = await response.json();
             console.log("👤 Usuario obtenido:", this.userInfo);
-            
+
             // Guardar info del usuario
             localStorage.setItem('user_email', this.userInfo.email || '');
             localStorage.setItem('user_name', this.userInfo.full_name || this.userInfo.email || 'Usuario');
@@ -76,10 +76,10 @@ class UserMenu {
         const userNameElement = document.getElementById('userName');
         const userDropdownName = document.getElementById('userDropdownName');
         const userDropdownEmail = document.getElementById('userDropdownEmail');
-        
+
         const userName = localStorage.getItem('user_name') || 'Usuario';
         const userEmail = localStorage.getItem('user_email') || 'usuario@email.com';
-        
+
         if (userNameElement) {
             // Mostrar solo el primer nombre si es muy largo
             const firstName = userName.split(' ')[0];
@@ -99,7 +99,7 @@ class UserMenu {
         const userRole = localStorage.getItem('user_role') || 'cliente';
         const adminPanelItem = document.getElementById('adminPanelItem');
         const adminDivider = document.getElementById('adminDivider');
-        
+
         // Mostrar botón de panel admin solo si el usuario es administrador
         if (userRole === 'administrativo') {
             if (adminPanelItem) adminPanelItem.style.display = 'block';

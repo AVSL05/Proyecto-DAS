@@ -18,26 +18,16 @@ async def get_promotions(activa: bool = True):
         filters = {}
         if activa:
             filters["activa"] = True
-            # También filtrar por fecha vigente
-            now = datetime.utcnow()
-            filters["fecha_inicio"] = {"$lte": now}
-            filters["fecha_fin"] = {"$gte": now}
-        
+            
         promotions = await PromotionModel.find(filters).sort("+fecha_inicio").to_list()
         
         promotions_out = []
         for p in promotions:
-            promotions_out.append(Promotion(
-                id=str(p.id),
-                titulo=p.titulo,
-                descripcion=p.descripcion,
-                descuento=p.descuento,
-                imagen_url=p.imagen_url,
-                fecha_inicio=p.fecha_inicio.date() if isinstance(p.fecha_inicio, datetime) else p.fecha_inicio,
-                fecha_fin=p.fecha_fin.date() if isinstance(p.fecha_fin, datetime) else p.fecha_fin,
-                activa=p.activa
-            ))
-        
+            promo_dict = p.dict()
+            promo_dict["id"] = str(p.id)
+            # Ensure dates are serialized properly if needed, but FastAPI handles datetime.
+            promotions_out.append(promo_dict)
+            
         return promotions_out
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener promociones: {str(e)}")

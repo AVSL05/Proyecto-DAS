@@ -15,7 +15,7 @@
         }
 
         const reservationData = {
-            vehicle_id: Number(vehicleId),
+            vehicle_id: String(vehicleId),
             vehicle_name: String(vehicleName || ""),
             price_per_day: Number(pricePerDay || 0),
             origin: getValue("origen"),

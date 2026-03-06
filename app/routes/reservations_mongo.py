@@ -3,7 +3,7 @@ from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 from beanie import PydanticObjectId
 
-from app.mongodb_models import Reservation, Vehicle, User, ReservationStatus
+from app.mongodb_models import Reservation, Vehicle, User, ReservationStatus, Payment, PaymentStatus
 from app.schemas_reservations_mongo import (
     ReservationCreate, ReservationUpdate, ReservationOut, ReservationListOut, ReservationStats, VehicleOut
 )
@@ -138,6 +138,19 @@ async def create_reservation(
     )
     
     await reservation.insert()
+    
+    # Crear registro de pago
+    payment_method = (payload.payment_method or "efectivo").strip().lower()
+    payment = Payment(
+        reservation_id=str(reservation.id),
+        user_id=str(current_user.id),
+        amount=total_price,
+        method=payment_method,
+        status=PaymentStatus.ACCEPTED,
+        transaction_id=payload.payment_reference,
+        notes=payload.payment_notes
+    )
+    await payment.insert()
     
     # Construir respuesta
     vehicle_dict = vehicle.dict()

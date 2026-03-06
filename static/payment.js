@@ -420,7 +420,7 @@ async function submitPayment(event) {
     const userNotes = notesInput.value.trim();
 
     const payload = {
-        vehicle_id: Number(pendingReservation.vehicle_id),
+        vehicle_id: String(pendingReservation.vehicle_id),
         start_date: startIso,
         end_date: endIso,
         pickup_location: pickupLocationInput.value.trim(),
@@ -451,12 +451,32 @@ async function submitPayment(event) {
 
         const body = await response.json().catch(() => ({}));
         if (!response.ok) {
-            throw new Error(body.detail || "No fue posible registrar la reservacion.");
+            let errorMessage = "No fue posible registrar la reservacion.";
+
+            if (body.detail) {
+                // Si detail es un array de errores de validación
+                if (Array.isArray(body.detail)) {
+                    errorMessage = body.detail.map(err => err.msg || JSON.stringify(err)).join(", ");
+                }
+                // Si detail es un objeto, convertirlo a string
+                else if (typeof body.detail === "object") {
+                    errorMessage = JSON.stringify(body.detail);
+                }
+                // Si es un string simple
+                else {
+                    errorMessage = String(body.detail);
+                }
+            }
+            throw new Error(errorMessage);
         }
 
         localStorage.removeItem("pending_reservation");
+
+        // Convertir ID a string de manera segura
+        const reservationId = body.id ? String(body.id) : "sin-id";
+
         showPaymentMessage(
-            `Pago registrado y reservacion #${body.id} creada. Total final: ${formatCurrency(body.total_price)}.`,
+            `✅ Pago registrado y reservacion #${reservationId} creada. Total final: ${formatCurrency(body.total_price)}.`,
             "success"
         );
 
@@ -464,7 +484,8 @@ async function submitPayment(event) {
             window.location.href = "/";
         }, 1800);
     } catch (error) {
-        showPaymentMessage(error.message || "Error procesando el pago.", "error");
+        const errorMsg = error instanceof Error ? error.message : String(error || "Error procesando el pago.");
+        showPaymentMessage(errorMsg, "error");
     } finally {
         lockForm(false);
     }

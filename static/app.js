@@ -17,7 +17,7 @@ function showMessage(elementId, message, type = 'success') {
     element.textContent = message;
     element.className = type;
     element.style.display = 'block';
-    
+
     setTimeout(() => {
         element.style.display = 'none';
     }, 5000);
@@ -40,34 +40,34 @@ async function loadCities() {
 function setupAutocomplete(inputId, suggestionsId, onSelectCallback) {
     const input = document.getElementById(inputId);
     const suggestionsDiv = document.getElementById(suggestionsId);
-    
+
     input.addEventListener('input', async (e) => {
         const query = e.target.value.trim();
-        
+
         if (query.length < 2) {
             suggestionsDiv.innerHTML = '';
             suggestionsDiv.style.display = 'none';
             return;
         }
-        
+
         // Filtrar ciudades localmente
-        const filtered = ciudades.filter(city => 
+        const filtered = ciudades.filter(city =>
             city.toLowerCase().includes(query.toLowerCase())
         ).slice(0, 8); // Limitar a 8 sugerencias
-        
+
         if (filtered.length === 0) {
             suggestionsDiv.innerHTML = '<div class="suggestion-item">No se encontraron ciudades</div>';
             suggestionsDiv.style.display = 'block';
             return;
         }
-        
+
         // Mostrar sugerencias
-        suggestionsDiv.innerHTML = filtered.map(city => 
+        suggestionsDiv.innerHTML = filtered.map(city =>
             `<div class="suggestion-item" data-city="${city}">${city}</div>`
         ).join('');
-        
+
         suggestionsDiv.style.display = 'block';
-        
+
         // Agregar eventos click a las sugerencias
         suggestionsDiv.querySelectorAll('.suggestion-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -79,7 +79,7 @@ function setupAutocomplete(inputId, suggestionsId, onSelectCallback) {
             });
         });
     });
-    
+
     // Cerrar sugerencias al hacer clic fuera
     document.addEventListener('click', (e) => {
         if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
@@ -91,50 +91,50 @@ function setupAutocomplete(inputId, suggestionsId, onSelectCallback) {
 // Inicializar autocomplete cuando cargue la página
 document.addEventListener('DOMContentLoaded', async () => {
     await loadCities();
-    
+
     // Configurar autocomplete para origen
     setupAutocomplete('origen', 'origenSuggestions', (city) => {
         selectedOrigin = city;
     });
-    
+
     // Configurar autocomplete para destino
     setupAutocomplete('destino', 'destinoSuggestions', (city) => {
         selectedDestination = city;
     });
-    
+
     // Configurar búsqueda de transportes
     const searchForm = document.getElementById('searchForm');
     if (searchForm) {
         searchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const origen = document.getElementById('origen').value.trim();
             const destino = document.getElementById('destino').value.trim();
             const fecha = document.getElementById('fecha').value;
             const pasajeros = parseInt(document.getElementById('pasajeros').value);
-            
+
             // Validar que haya datos
             if (!origen || !destino || !fecha || !pasajeros) {
                 alert('Por favor completa todos los campos');
                 return;
             }
-            
+
             // Validar que sean ciudades válidas (solo si hay ciudades cargadas)
             if (ciudades.length > 0 && !ciudades.includes(origen)) {
                 alert('Por favor selecciona una ciudad válida de origen');
                 return;
             }
-            
+
             if (ciudades.length > 0 && !ciudades.includes(destino)) {
                 alert('Por favor selecciona una ciudad válida de destino');
                 return;
             }
-            
+
             if (origen === destino) {
                 alert('El origen y destino deben ser diferentes');
                 return;
             }
-            
+
             try {
                 // Construir query params
                 const params = new URLSearchParams({
@@ -143,10 +143,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     start_date: fecha,
                     capacity: pasajeros
                 });
-                
+
                 const response = await fetch(`${API_BASE_URL}/search/vehicles?${params}`);
                 const data = await response.json();
-                
+
                 displaySearchResults(data, origen, destino, fecha, pasajeros);
             } catch (error) {
                 console.error('Error:', error);
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
-    
+
     // Cargar promociones y reviews
     loadPromotions();
     loadReviews();
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Mostrar resultados de búsqueda
 function displaySearchResults(data, origen, destino, fecha, pasajeros) {
     const container = document.getElementById('searchResults');
-    
+
     if (data.total === 0) {
         container.innerHTML = `
             <div style="text-align: center; padding: 40px; color: #666;">
@@ -173,7 +173,7 @@ function displaySearchResults(data, origen, destino, fecha, pasajeros) {
         `;
         return;
     }
-    
+
     let html = `
         <div style="margin: 30px 0 20px;">
             <h3 style="color: white;">Vehículos disponibles (${data.total} encontrados)</h3>
@@ -182,7 +182,7 @@ function displaySearchResults(data, origen, destino, fecha, pasajeros) {
             </p>
         </div>
     `;
-    
+
     data.vehicles.forEach(vehicle => {
         const typeEmoji = {
             'van': '🚐',
@@ -191,16 +191,16 @@ function displaySearchResults(data, origen, destino, fecha, pasajeros) {
             'suv': '🚙',
             'minibus': '🚌'
         };
-        
+
         const emoji = typeEmoji[vehicle.vehicle_type] || '🚗';
-        
+
         html += `
             <div class="vehicle-card">
                 <div class="vehicle-image">
-                    ${vehicle.image_url 
-                        ? `<img src="${vehicle.image_url}" alt="${vehicle.brand} ${vehicle.model}" onerror="this.src='https://via.placeholder.com/300x200?text=Vehículo'">`
-                        : `<div class="vehicle-placeholder">${emoji}</div>`
-                    }
+                    ${vehicle.image_url
+                ? `<img src="${vehicle.image_url}" alt="${vehicle.brand} ${vehicle.model}" onerror="this.src='https://via.placeholder.com/300x200?text=Vehículo'">`
+                : `<div class="vehicle-placeholder">${emoji}</div>`
+            }
                 </div>
                 <div class="vehicle-details">
                     <div class="vehicle-header">
@@ -221,7 +221,7 @@ function displaySearchResults(data, origen, destino, fecha, pasajeros) {
                             <div class="price-main">$${vehicle.price_per_day.toFixed(2)} <span class="price-unit">/ día</span></div>
                             ${vehicle.price_per_hour ? `<div class="price-secondary">$${vehicle.price_per_hour.toFixed(2)} / hora</div>` : ''}
                         </div>
-                        <button class="btn btn-primary" onclick="selectVehicle(${vehicle.id}, '${vehicle.brand} ${vehicle.model}', ${vehicle.price_per_day})">
+                        <button class="btn btn-primary" onclick="selectVehicle('${vehicle.id}', '${vehicle.brand} ${vehicle.model}', ${vehicle.price_per_day})">
                             Seleccionar
                         </button>
                     </div>
@@ -229,9 +229,9 @@ function displaySearchResults(data, origen, destino, fecha, pasajeros) {
             </div>
         `;
     });
-    
+
     container.innerHTML = html;
-    
+
     // Scroll suave a los resultados
     container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
@@ -239,14 +239,14 @@ function displaySearchResults(data, origen, destino, fecha, pasajeros) {
 // Seleccionar vehículo
 function selectVehicle(vehicleId, vehicleName, pricePerDay) {
     const token = localStorage.getItem('access_token');
-    
+
     if (!token) {
         if (confirm('Debes iniciar sesión para hacer una reservación. ¿Deseas ir al login?')) {
             window.location.href = '/login';
         }
         return;
     }
-    
+
     // Guardar información para la reservación
     const reservationData = {
         vehicle_id: vehicleId,
@@ -257,9 +257,9 @@ function selectVehicle(vehicleId, vehicleName, pricePerDay) {
         start_date: document.getElementById('fecha').value,
         passengers: document.getElementById('pasajeros').value
     };
-    
+
     localStorage.setItem('pending_reservation', JSON.stringify(reservationData));
-    
+
     window.location.href = '/payment';
 }
 
@@ -278,12 +278,12 @@ async function loadPromotions() {
 // Mostrar Promociones
 function displayPromotions(promotions) {
     const container = document.getElementById('promotionsContainer');
-    
+
     if (promotions.length === 0) {
         container.innerHTML = '<p>No hay promociones disponibles en este momento.</p>';
         return;
     }
-    
+
     let html = '';
     promotions.forEach(promo => {
         html += `
@@ -301,7 +301,7 @@ function displayPromotions(promotions) {
             </div>
         `;
     });
-    
+
     container.innerHTML = html;
 }
 
@@ -315,7 +315,7 @@ async function loadReviewsCarousel() {
         startAutoRotate();
     } catch (error) {
         console.error('Error:', error);
-        document.getElementById('reviewCarousel').innerHTML = 
+        document.getElementById('reviewCarousel').innerHTML =
             '<div class="carousel-loading">Error al cargar calificaciones</div>';
     }
 }
@@ -323,14 +323,14 @@ async function loadReviewsCarousel() {
 // Mostrar carrusel de reviews
 function displayCarousel() {
     if (reviewsData.length === 0) {
-        document.getElementById('reviewCarousel').innerHTML = 
+        document.getElementById('reviewCarousel').innerHTML =
             '<div class="carousel-loading">No hay calificaciones disponibles</div>';
         return;
     }
-    
+
     const review = reviewsData[currentReviewIndex];
     const carousel = document.getElementById('reviewCarousel');
-    
+
     carousel.innerHTML = `
         <div class="review-carousel-item">
             <div class="review-stars">${getStars(review.calificacion)}</div>
@@ -339,7 +339,7 @@ function displayCarousel() {
             <p class="review-date">${review.fecha}</p>
         </div>
     `;
-    
+
     // Actualizar dots
     updateDots();
 }
@@ -348,11 +348,11 @@ function displayCarousel() {
 function updateDots() {
     const dotsContainer = document.getElementById('carouselDots');
     let dotsHtml = '';
-    
+
     for (let i = 0; i < reviewsData.length; i++) {
         dotsHtml += `<span class="dot ${i === currentReviewIndex ? 'active' : ''}" onclick="goToReview(${i})"></span>`;
     }
-    
+
     dotsContainer.innerHTML = dotsHtml;
 }
 
@@ -397,9 +397,9 @@ function getStars(rating) {
 // Suscripción a Newsletter
 document.getElementById('newsletterForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const email = document.getElementById('email').value;
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/newsletter/subscribe`, {
             method: 'POST',
@@ -408,9 +408,9 @@ document.getElementById('newsletterForm').addEventListener('submit', async (e) =
             },
             body: JSON.stringify({ email })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             showMessage('newsletterMessage', data.message, 'success');
             document.getElementById('newsletterForm').reset();
@@ -429,10 +429,10 @@ window.addEventListener('load', () => {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('fecha').setAttribute('min', today);
     document.getElementById('fecha').value = today;
-    
+
     // Cargar promociones automáticamente
     loadPromotions();
-    
+
     // Cargar reviews en el carrusel
     loadReviewsCarousel();
 });

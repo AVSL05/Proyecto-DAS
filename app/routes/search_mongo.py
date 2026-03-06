@@ -1,9 +1,6 @@
-from fastapi import APIRouter, HTTPException, Query, Depends
-from sqlalchemy.orm import Session
-from app.db import get_db
-from app.db_models import Vehicle
-from datetime import date, datetime
-from typing import List, Optional
+from fastapi import APIRouter, Query
+from app.mongodb_models import Vehicle
+from typing import Optional
 
 router = APIRouter()
 
@@ -38,31 +35,30 @@ async def search_vehicles(
     destination: Optional[str] = Query(None, description="Ciudad de destino"),
     start_date: Optional[str] = Query(None, description="Fecha de inicio (YYYY-MM-DD)"),
     capacity: Optional[int] = Query(None, description="Capacidad mínima de pasajeros"),
-    vehicle_type: Optional[str] = Query(None, description="Tipo de vehículo"),
-    db: Session = Depends(get_db)
+    vehicle_type: Optional[str] = Query(None, description="Tipo de vehículo")
 ):
-    """Buscar vehículos disponibles con filtros"""
+    """Buscar vehículos disponibles con filtros en MongoDB"""
     
     # Query base - solo vehículos activos y disponibles
-    query = db.query(Vehicle).filter(
-        Vehicle.is_active == True,
-        Vehicle.status == 'available'
-    )
+    filters = {
+        "is_active": True,
+        "status": "available"
+    }
     
     # Aplicar filtros
     if capacity:
-        query = query.filter(Vehicle.capacity >= capacity)
+        filters["capacity"] = {"$gte": capacity}
     
     if vehicle_type:
-        query = query.filter(Vehicle.vehicle_type == vehicle_type)
+        filters["vehicle_type"] = vehicle_type
     
-    vehicles = query.order_by(Vehicle.price_per_day.asc()).all()
+    vehicles = await Vehicle.find(filters).sort("+price_per_day").to_list()
     
     # Formatear respuesta
     results = []
     for vehicle in vehicles:
         results.append({
-            "id": vehicle.id,
+            "id": str(vehicle.id),  # MongoDB usa string IDs
             "brand": vehicle.brand,
             "model": vehicle.model,
             "year": vehicle.year,

@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 from app.mongodb import connect_to_mongo, close_mongo_connection
 
 # Importar routers MongoDB
-from app.routes import search
+from app.routes import search_mongo as search
 from app.routes import reviews_mongo as reviews
 from app.routes import newsletter_mongo as newsletter
 from app.routes import promotions_mongo as promotions

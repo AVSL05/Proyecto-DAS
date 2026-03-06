@@ -66,6 +66,9 @@ class ReservationBase(BaseModel):
     pickup_location: str = Field(..., min_length=3, max_length=200)
     return_location: Optional[str] = Field(None, max_length=200)
     notes: Optional[str] = None
+    payment_method: Optional[str] = Field(None, description="efectivo, tarjeta, msi, cheque, deposito")
+    payment_reference: Optional[str] = Field(None, max_length=255)
+    payment_notes: Optional[str] = Field(None, max_length=1500)
 
     @field_validator('end_date')
     @classmethod
